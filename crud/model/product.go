@@ -1,4 +1,4 @@
-package product
+package model
 
 import (
 	"fmt"
@@ -12,19 +12,27 @@ type Product struct {
 	Name    string
 	OrgCode string
 	JanCode string
+	Detail  string
 }
 
-func Init() {
+func InitProduct() {
 	db := db.GetDB()
 	db.AutoMigrate(&Product{})
 }
 
-func Create(product *Product) {
+func CreateProduct(product *Product) {
 	db := db.GetDB()
 	db.Create(product)
 }
 
-func Read(orgCode, name string) []Product {
+func GetProductFromId(id string) Product {
+	db := db.GetDB()
+	var product Product
+	db.First(&product, id)
+	return product
+}
+
+func ReadProduct(orgCode, name string) []Product {
 	db := db.GetDB()
 	var products []Product
 	db.Find(&products, "org_code LIKE ? and name LIKE ?",
@@ -34,12 +42,12 @@ func Read(orgCode, name string) []Product {
 	return products
 }
 
-func Update(product Product) {
+func UpdateProduct(product Product) {
 	db := db.GetDB()
 	db.Save(product)
 }
 
-func Delete(product Product) {
+func DeleteProduct(id string) {
 	db := db.GetDB()
-	db.Delete(&product)
+	db.Delete(&Product{}, id)
 }

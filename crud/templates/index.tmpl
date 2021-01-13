@@ -1,5 +1,6 @@
 <html>
   <head>
+    <link rel="icon" href="/static/assets/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
   </head>
   <body class="bg-light">
@@ -9,6 +10,11 @@
           <h2>商品一覧画面</h2>
           <p class="lead">登録済みの商品一覧を表示するするためのサンプル画面</p>
         </div>
+        {{ with .msg }}
+          <div class="alert alert-success" role="alert">
+            <strong>{{.}}</strong>
+          </div>
+        {{ end}}
   
         <div class="row">
           <div class="col-md-12 order-md-1">
@@ -43,6 +49,7 @@
                   <th scope="col">#</th>
                   <th scope="col">商品名</th>
                   <th scope="col">商品コード</th>
+                  <th scope="col">Janコード</th>
                   <th scope="col">最終更新日時</th>
                 </tr>
               </thead>
@@ -50,9 +57,10 @@
                 {{ with .products }}
                   {{ range $i, $v := . }}
                   <tr>
-                    <th scope="row"><a href="">{{$i }}</a></th>
+                    <th scope="row"><a href="/product/detail/{{.ID}}">{{$i}}</a></th>
                     <td>{{ .Name }}</td>
                     <td>{{ .OrgCode }}</td>
+                    <td>{{ .JanCode }}</td>
                     <td>{{ .UpdatedAt }}</td>
                   </tr>
                   {{ end }}

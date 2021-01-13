@@ -1,5 +1,6 @@
 <html>
   <head>
+    <link rel="icon" href="/static/assets/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
   </head>
   <body class="bg-light">
@@ -9,28 +10,58 @@
           <h2>商品設定画面</h2>
           <p class="lead">商品情報を設定するためのサンプル画面</p>
         </div>
+
+        {{ with .msg }}
+          <div class="alert alert-success" role="alert">
+            <strong>{{.}}</strong>
+          </div>
+        {{ end}}
   
         <div class="row">
           <div class="col-md-12 order-md-1">
             <h4 class="mb-3">商品情報</h4>
             <form method="post" action="/product/">
+              {{ with .P.ID }}
+                <input type="hidden" name="ID" value="{{.}}">
+              {{ end }}
               <div class="row">
                 <div class="col-md-9 mb-4">
                   <label for="name">商品名</label>
-                  <input type="text" class="form-control" name="name" id="name" placeholder="" value="{{.name}}" required="">
+                  <input type="text" class="form-control" name="Name" id="Name" placeholder="" value="{{.P.Name}}" required="">
                 </div>
               </div>
   
               <div class="row">
                 <div class="col-md-9 mb-4">
-                  <label for="orgCode">商品コード</label>
-                  <input type="text" class="form-control" name="orgCode" id="orgCode" placeholder="" value="{{.orgCode}}" required="">
+                  <label for="OrgCode">商品コード</label>
+                  <input type="text" class="form-control" name="OrgCode" id="OrgCode" placeholder="" value="{{.P.OrgCode}}" required="">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-9 mb-4">
+                  <label for="OrgCode">Janコード</label>
+                  <input type="text" class="form-control" name="JanCode" id="JanCode" placeholder="" value="{{.P.JanCode}}" >
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-9 mb-4">
+                  <label for="OrgCode">商品説明</label>
+                  <textarea class="form-control" name="Detail" id="Detail" placeholder="" rows="4" cols="50">{{.P.Detail}}</textarea>
                 </div>
               </div>
               <hr class="mb-4">
               <button class="btn btn-primary btn-lg btn-block" type="submit">保存する</button>
+
               <button class="btn btn-primary btn-lg btn-block" type="button" onclick='location.href="/product"'>一覧に戻る</button>
             </form>
+
+            {{ with .P.ID }}
+              <hr class="mb-4">
+              <form method="post" action="/product/delete">
+                <input type="hidden" name="id" value="{{.}}">
+                <button class="btn btn-danger btn-lg btn-block" type="submit">削除する</button>
+              </form>
+            {{ end }}
           </div>
         </div>
   
