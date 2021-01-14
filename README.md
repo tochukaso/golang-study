@@ -88,3 +88,18 @@ func InitProduct() {
 
 `db(gorm.DB).AutoMigrate`でDDLを実行することが出来ます。
 
+DBへのデータの更新は以下のように構造体を指定して保存するだけです。
+
+``` go
+	db.Save(product)
+```
+
+ページング処理についてもOffsetとLimitを利用して簡単に実装することが出来ます。
+
+``` go 
+	db := db.GetDB()
+	offset := (page - 1) * pageSize
+	db = db.Offset(offset).Limit(pageSize)
+	return readProduct(db, orgCode, name)
+```
+
