@@ -42,7 +42,7 @@ func (p Paginavi) Navigation() template.HTML {
 		bef := p.Page - 1
 		tag += fmt.Sprintf("<li class='page-item'><a class='page-link' href='#' onclick=\"$('#page').val('%d');$('#searchForm').submit();\">%d</a></li>", bef, bef)
 	}
-	tag += fmt.Sprintf("<li class='page-item'><a class='page-link active'>%d</a></li>", p.Page)
+	tag += fmt.Sprintf("<li class='page-item active'><a class='page-link'>%d</a></li>", p.Page)
 
 	if lastDisabled == "" {
 		af := p.Page + 1
