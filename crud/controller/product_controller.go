@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"omori.jp/message"
 	"omori.jp/model"
 )
 
@@ -39,14 +41,22 @@ func GetProduct(c *gin.Context) {
 	c.HTML(http.StatusOK, "detail.tmpl", gin.H{
 		"P": product,
 	})
-
 }
 
 func PutProduct(c *gin.Context) {
-	product := model.Product{}
-	err := c.Bind(&product)
-	if err != nil {
-		c.String(http.StatusBadRequest, "Bad request")
+	var product model.Product
+	err := c.ShouldBind(&product)
+	errors := validator.New().Struct(product)
+	if err != nil || errors != nil {
+		errs := errors.(validator.ValidationErrors)
+		sliceErrs := []string{}
+		for _, e := range errs {
+			sliceErrs = append(sliceErrs, message.ConvertMessage(e))
+		}
+		c.HTML(http.StatusOK, "detail.tmpl", gin.H{
+			"P":      product,
+			"errMsg": sliceErrs,
+		})
 		return
 	}
 

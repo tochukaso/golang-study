@@ -9,9 +9,9 @@ import (
 
 type Product struct {
 	gorm.Model
-	Name    string
-	OrgCode string
-	JanCode string
+	Name    string `form:"Name" binding:"required" validate:"required"`
+	OrgCode string `form:"OrgCode" validate:"required,ascii"`
+	JanCode string `form:"JanCode" validate:"ascii"`
 	Detail  string
 }
 

@@ -16,6 +16,11 @@
             <strong>{{.}}</strong>
           </div>
         {{ end}}
+        {{ with .errMsg }}
+          <div class="alert alert-danger" role="alert">
+            <strong>{{.}}</strong>
+          </div>
+        {{ end}}
   
         <div class="row">
           <div class="col-md-12 order-md-1">
@@ -27,14 +32,14 @@
               <div class="row">
                 <div class="col-md-9 mb-4">
                   <label for="name">商品名</label>
-                  <input type="text" class="form-control" name="Name" id="Name" placeholder="" value="{{.P.Name}}" required="">
+                  <input type="text" class="form-control" name="Name" id="Name" placeholder="" value="{{.P.Name}}" >
                 </div>
               </div>
   
               <div class="row">
                 <div class="col-md-9 mb-4">
                   <label for="OrgCode">商品コード</label>
-                  <input type="text" class="form-control" name="OrgCode" id="OrgCode" placeholder="" value="{{.P.OrgCode}}" required="">
+                  <input type="text" class="form-control" name="OrgCode" id="OrgCode" placeholder="" value="{{.P.OrgCode}}">
                 </div>
               </div>
               <div class="row">
