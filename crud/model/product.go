@@ -32,14 +32,15 @@ func GetProductFromId(id string) Product {
 	return product
 }
 
-func ReadProduct(orgCode, name string) []Product {
+func ReadProduct(orgCode, name string) ([]Product, int64) {
+	return readProduct(db.GetDB(), orgCode, name)
+}
+
+func ReadProductWithPaging(page, pageSize int, orgCode, name string) ([]Product, int64) {
 	db := db.GetDB()
-	var products []Product
-	db.Find(&products, "org_code LIKE ? and name LIKE ?",
-		fmt.Sprintf("%%%s%%", orgCode),
-		fmt.Sprintf("%%%s%%", name),
-	)
-	return products
+	offset := (page - 1) * pageSize
+	db = db.Offset(offset).Limit(pageSize)
+	return readProduct(db, orgCode, name)
 }
 
 func UpdateProduct(product Product) {
@@ -50,4 +51,19 @@ func UpdateProduct(product Product) {
 func DeleteProduct(id string) {
 	db := db.GetDB()
 	db.Delete(&Product{}, id)
+}
+
+func readProduct(gdb *gorm.DB, orgCode, name string) ([]Product, int64) {
+	var products []Product
+	var count int64
+	where := []interface{}{"org_code LIKE ? and name LIKE ?"}
+	args := []interface{}{fmt.Sprintf("%%%s%%", orgCode),
+		fmt.Sprintf("%%%s%%", name)}
+
+	gdb.Find(&products, append(where, args...)...)
+	fmt.Println("products", products)
+	db.GetDB().Model(&Product{}).Where(where[0], args...).Count(&count)
+
+	fmt.Println(count)
+	return products, count
 }

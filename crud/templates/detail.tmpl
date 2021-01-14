@@ -27,6 +27,11 @@
             <h4 class="mb-3">商品情報</h4>
             <form method="post" action="/product/">
               {{ with .P.ID }}
+              <div class="row">
+                <div class="col-md-9 mb-2">
+                  <label>ID&nbsp;:&nbsp;{{.}}</label>
+                </div>
+              </div>
                 <input type="hidden" name="ID" value="{{.}}">
               {{ end }}
               <div class="row">

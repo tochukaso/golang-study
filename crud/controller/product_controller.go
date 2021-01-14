@@ -3,11 +3,13 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"omori.jp/message"
 	"omori.jp/model"
+	"omori.jp/pagination"
 )
 
 func InitProduct() {
@@ -19,14 +21,23 @@ func ShowProducts(c *gin.Context) {
 	orgCode := c.Query("orgCode")
 	fmt.Println("name", name)
 	fmt.Println("orgCode", orgCode)
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+	fmt.Println("page", page)
+	fmt.Println("pageSize", pageSize)
 
-	products := model.ReadProduct(orgCode, name)
+	products, count := model.ReadProductWithPaging(page, pageSize, orgCode, name)
 	fmt.Println(products)
+	fmt.Println(count)
 
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"name":     name,
-		"orgCode":  orgCode,
-		"products": products,
+		"name":       name,
+		"orgCode":    orgCode,
+		"page":       page,
+		"count":      count,
+		"pageSize":   pageSize,
+		"products":   products,
+		"pagination": pagination.Pagination(count, page, pageSize),
 	})
 
 }
@@ -82,9 +93,10 @@ func DeleteProduct(c *gin.Context) {
 
 	model.DeleteProduct(id)
 
-	products := model.ReadProduct("", "")
+	products, count := model.ReadProduct("", "")
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"msg":      "削除しました",
 		"products": products,
+		"count":    count,
 	})
 }
