@@ -6,12 +6,12 @@ import (
 )
 
 type Paginavi struct {
-	Count    int64
+	Count    int
 	Page     int
 	PageSize int
 }
 
-func Pagination(count int64, page, pageSize int) Paginavi {
+func Pagination(count int, page, pageSize int) Paginavi {
 	return Paginavi{
 		Count:    count,
 		Page:     page,
@@ -22,7 +22,7 @@ func Pagination(count int64, page, pageSize int) Paginavi {
 func (p Paginavi) CountExplanation() string {
 	from := (p.Page-1)*p.PageSize + 1
 	to := p.Page * p.PageSize
-	return fmt.Sprintf("全 %d 件中 %d - %d 件目", p.Count, from, to)
+	return fmt.Sprintf("全 %d 件中 %d - %d 件目", p.Count, from, min(p.Count, to))
 }
 
 func (p Paginavi) Navigation() template.HTML {

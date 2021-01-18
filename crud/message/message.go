@@ -1,6 +1,10 @@
 package message
 
-import "github.com/go-playground/validator/v10"
+import (
+	"fmt"
+
+	"github.com/go-playground/validator/v10"
+)
 
 func ConvertMessage(e validator.FieldError) string {
 
@@ -12,6 +16,12 @@ func ConvertMessage(e validator.FieldError) string {
 		field = "商品コード"
 	case "JanCode":
 		field = "Janコード"
+	case "UserName":
+		field = "ユーザー名"
+	case "UserCode":
+		field = "ユーザーコード"
+	case "Password":
+		field = "パスワード"
 	default:
 		field = e.Field()
 	}
@@ -21,7 +31,10 @@ func ConvertMessage(e validator.FieldError) string {
 		eMsg = field + "は必須です"
 	case "ascii":
 		eMsg = field + "は半角英数字で入力してください"
+	case "gte":
+		eMsg = fmt.Sprintf("%vは%v文字以上の長さで入力してください", field, e.Param())
 	default:
+		fmt.Println("tagname", e.Tag())
 		eMsg = field + "は不正です"
 	}
 	return eMsg

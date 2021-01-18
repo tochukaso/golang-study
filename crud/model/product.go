@@ -32,11 +32,11 @@ func GetProductFromId(id string) Product {
 	return product
 }
 
-func ReadProduct(orgCode, name string) ([]Product, int64) {
+func ReadProduct(orgCode, name string) ([]Product, int) {
 	return readProduct(db.GetDB(), orgCode, name)
 }
 
-func ReadProductWithPaging(page, pageSize int, orgCode, name string) ([]Product, int64) {
+func ReadProductWithPaging(page, pageSize int, orgCode, name string) ([]Product, int) {
 	db := db.GetDB()
 	offset := (page - 1) * pageSize
 	db = db.Offset(offset).Limit(pageSize)
@@ -53,7 +53,7 @@ func DeleteProduct(id string) {
 	db.Delete(&Product{}, id)
 }
 
-func readProduct(gdb *gorm.DB, orgCode, name string) ([]Product, int64) {
+func readProduct(gdb *gorm.DB, orgCode, name string) ([]Product, int) {
 	var products []Product
 	var count int64
 	where := []interface{}{"org_code LIKE ? and name LIKE ?"}
@@ -65,5 +65,5 @@ func readProduct(gdb *gorm.DB, orgCode, name string) ([]Product, int64) {
 	db.GetDB().Model(&Product{}).Where(where[0], args...).Count(&count)
 
 	fmt.Println(count)
-	return products, count
+	return products, int(count)
 }

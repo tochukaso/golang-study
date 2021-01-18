@@ -30,7 +30,7 @@ func ShowProducts(c *gin.Context) {
 	fmt.Println(products)
 	fmt.Println(count)
 
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+	c.HTML(http.StatusOK, "product_index.tmpl", gin.H{
 		"name":       name,
 		"orgCode":    orgCode,
 		"page":       page,
@@ -49,7 +49,7 @@ func GetProduct(c *gin.Context) {
 	product := model.GetProductFromId(id)
 	fmt.Println(product)
 
-	c.HTML(http.StatusOK, "detail.tmpl", gin.H{
+	c.HTML(http.StatusOK, "product_detail.tmpl", gin.H{
 		"P": product,
 	})
 }
@@ -64,7 +64,7 @@ func PutProduct(c *gin.Context) {
 		for _, e := range errs {
 			sliceErrs = append(sliceErrs, message.ConvertMessage(e))
 		}
-		c.HTML(http.StatusOK, "detail.tmpl", gin.H{
+		c.HTML(http.StatusOK, "product_detail.tmpl", gin.H{
 			"P":      product,
 			"errMsg": sliceErrs,
 		})
@@ -81,7 +81,7 @@ func PutProduct(c *gin.Context) {
 		msg = "保存しました"
 	}
 
-	c.HTML(http.StatusOK, "detail.tmpl", gin.H{
+	c.HTML(http.StatusOK, "product_detail.tmpl", gin.H{
 		"P":   product,
 		"msg": msg,
 	})
@@ -94,7 +94,7 @@ func DeleteProduct(c *gin.Context) {
 	model.DeleteProduct(id)
 
 	products, count := model.ReadProduct("", "")
-	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+	c.HTML(http.StatusOK, "product_index.tmpl", gin.H{
 		"msg":      "削除しました",
 		"products": products,
 		"count":    count,
