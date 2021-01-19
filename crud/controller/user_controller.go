@@ -59,7 +59,7 @@ func PutUser(c *gin.Context) {
 	var user model.User
 	err := c.ShouldBind(&user)
 	validate := validator.New()
-	validate.RegisterValidation("duplicateCode", checkDuplicateUserCode)
+	validate.RegisterStructValidation(checkDuplicateUserCode, model.User{})
 	errors := validate.Struct(user)
 	if err != nil || errors != nil {
 		errs := errors.(validator.ValidationErrors)
@@ -119,14 +119,16 @@ func createIDUser(id int) model.User {
 	return user
 }
 
-func checkDuplicateUserCode(fl validator.FieldLevel) bool {
-	var data model.User
-	data.UserCode = fl.Field().String()
-	user := data.GetFromCode()
-	fmt.Println("checkDuplicate", user)
+func checkDuplicateUserCode(sl validator.StructLevel) {
+	user := sl.Current().Interface().(model.User)
 
-	if user.GetID() != 0 {
-		return false
+	if user.UserCode == "" || user.ID != 0 {
+		return
 	}
-	return true
+	dbUser := model.GetUserFromCode(user.UserCode)
+	fmt.Println("dbUser", dbUser)
+
+	if dbUser.GetID() != 0 {
+		sl.ReportError(user.UserCode, "UserCode", "UserCode", "duplicateCode", "")
+	}
 }

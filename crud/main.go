@@ -1,15 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"omori.jp/controller"
 	"omori.jp/middleware"
+	"omori.jp/model"
 )
 
 func main() {
 	engine := gin.Default()
+	store := cookie.NewStore([]byte("secret"))
+	engine.Use(sessions.Sessions("mysession", store))
 	engine.Use(middleware.RecordUaAndTime)
 	engine.LoadHTMLGlob("templates/*.tmpl")
 
@@ -33,28 +40,50 @@ func addLoginController(engine *gin.Engine) {
 	engine.GET("/", controller.ShowLogin)
 	engine.GET("/login/", controller.ShowLogin)
 	engine.POST("/login/", controller.AttemptLogin)
+	engine.GET("/logout/", controller.Logout)
 }
 
 func addProductController(engine *gin.Engine) {
 	controller.InitProduct()
-	engine.GET("/product/", controller.ShowProducts)
-	engine.GET("/product/detail/:id", controller.GetProduct)
+	group := engine.Group("/product")
+	group.Use(sessionCheck)
+	group.GET("/", controller.ShowProducts)
+	group.GET("/detail/:id", controller.GetProduct)
 
-	engine.GET("/product/new", func(c *gin.Context) {
+	group.GET("/new", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "product_detail.tmpl", gin.H{})
 	})
-	engine.POST("/product/", controller.PutProduct)
-	engine.POST("/product/delete", controller.DeleteProduct)
+	group.POST("/", controller.PutProduct)
+	group.POST("/delete", controller.DeleteProduct)
 }
 
 func addUserController(engine *gin.Engine) {
 	controller.InitUser()
-	engine.GET("/user/", controller.ShowUsers)
-	engine.GET("/user/detail/:id", controller.GetUser)
+	group := engine.Group("/user")
+	group.Use(sessionCheck)
+	group.GET("/", controller.ShowUsers)
+	group.GET("/detail/:id", controller.GetUser)
 
-	engine.GET("/user/new", func(c *gin.Context) {
+	group.GET("/new", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "user_detail.tmpl", gin.H{})
 	})
-	engine.POST("/user/", controller.PutUser)
-	engine.POST("/user/delete", controller.DeleteUser)
+	group.POST("/", controller.PutUser)
+	group.POST("/delete", controller.DeleteUser)
+}
+
+func sessionCheck(c *gin.Context) {
+	session := sessions.Default(c)
+	fmt.Println("session", session)
+	userID := session.Get("UserID")
+	fmt.Println("UserID", userID)
+	if userID == nil {
+		c.Redirect(http.StatusTemporaryRedirect, "/login/")
+		c.Abort()
+	} else {
+		user := model.GetUserFromId(strconv.Itoa(userID.(int)))
+		c.Set("UserID", userID)
+		c.Set("UserCode", user.UserCode)
+		c.Set("UserName", user.UserName)
+		c.Next()
+	}
 }

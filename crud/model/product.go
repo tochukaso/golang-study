@@ -10,7 +10,7 @@ import (
 type Product struct {
 	gorm.Model
 	Name    string `form:"Name" binding:"required" validate:"required" gorm:"not null"`
-	OrgCode string `form:"OrgCode" validate:"required,ascii,duplicateCode" gorm:"unique;not null"`
+	OrgCode string `form:"OrgCode" validate:"required,ascii" gorm:"unique;not null"`
 	JanCode string `form:"JanCode" validate:"ascii"`
 	Detail  string
 }
@@ -55,6 +55,12 @@ func GetProductFromId(id string) Product {
 	db := db.GetDB()
 	var product Product
 	db.First(&product, id)
+	return product
+}
+
+func GetProductFromCode(code string) Product {
+	var product Product
+	GetDB().Find(&product, "org_code = ?", code)
 	return product
 }
 

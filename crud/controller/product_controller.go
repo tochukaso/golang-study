@@ -58,7 +58,7 @@ func PutProduct(c *gin.Context) {
 	var product model.Product
 	err := c.ShouldBind(&product)
 	validate := validator.New()
-	validate.RegisterValidation("duplicateCode", checkDuplicateOrgCode)
+	validate.RegisterStructValidation(checkDuplicateOrgCode, model.Product{})
 	errors := validate.Struct(product)
 	if err != nil || errors != nil {
 		errs := errors.(validator.ValidationErrors)
@@ -117,14 +117,16 @@ func createIDProduct(id int) model.Product {
 	return product
 }
 
-func checkDuplicateOrgCode(fl validator.FieldLevel) bool {
-	var data model.Product
-	data.OrgCode = fl.Field().String()
-	user := data.GetFromCode()
-	fmt.Println("checkDuplicate", user)
+func checkDuplicateOrgCode(sl validator.StructLevel) {
+	product := sl.Current().Interface().(model.Product)
 
-	if user.GetID() != 0 {
-		return false
+	if product.OrgCode == "" || product.ID != 0 {
+		return
 	}
-	return true
+	dbProduct := model.GetProductFromCode(product.OrgCode)
+	fmt.Println("dbProduct", dbProduct)
+
+	if dbProduct.GetID() != 0 {
+		sl.ReportError(product.OrgCode, "OrgCode", "OrgCode", "duplicateCode", "")
+	}
 }

@@ -8,7 +8,7 @@ import (
 
 type User struct {
 	gorm.Model
-	UserCode string `form:"UserCode" binding:"required" validate:"required,ascii,duplicateCode" gorm:"unique;not null"`
+	UserCode string `form:"UserCode" binding:"required" validate:"required,ascii" gorm:"unique;not null"`
 	UserName string `form:"UserName" binding:"required" validate:"required" gorm:"not null"`
 	Password string `form:"Password" binding:"required" validate:"required,ascii,gte=8" gorm:"not null"`
 }
