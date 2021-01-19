@@ -51,7 +51,7 @@ func addProductController(engine *gin.Engine) {
 	group.GET("/detail/:id", controller.GetProduct)
 
 	group.GET("/new", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "product_detail.tmpl", gin.H{})
+		controller.RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{})
 	})
 	group.POST("/", controller.PutProduct)
 	group.POST("/delete", controller.DeleteProduct)
@@ -65,7 +65,7 @@ func addUserController(engine *gin.Engine) {
 	group.GET("/detail/:id", controller.GetUser)
 
 	group.GET("/new", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "user_detail.tmpl", gin.H{})
+		controller.RenderHTML(c, http.StatusOK, "user_detail.tmpl", gin.H{})
 	})
 	group.POST("/", controller.PutUser)
 	group.POST("/delete", controller.DeleteUser)

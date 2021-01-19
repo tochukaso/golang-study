@@ -31,7 +31,7 @@ func ShowUsers(c *gin.Context) {
 	fmt.Println(users)
 	fmt.Println(count)
 
-	c.HTML(http.StatusOK, "user_index.tmpl", gin.H{
+	RenderHTML(c, http.StatusOK, "user_index.tmpl", gin.H{
 		"userName":   userName,
 		"userCode":   userCode,
 		"page":       page,
@@ -50,7 +50,7 @@ func GetUser(c *gin.Context) {
 	user = user.Read().(model.User)
 	user.Password = ""
 
-	c.HTML(http.StatusOK, "user_detail.tmpl", gin.H{
+	RenderHTML(c, http.StatusOK, "user_detail.tmpl", gin.H{
 		"P": user,
 	})
 }
@@ -67,7 +67,7 @@ func PutUser(c *gin.Context) {
 		for _, e := range errs {
 			sliceErrs = append(sliceErrs, message.ConvertMessage(e))
 		}
-		c.HTML(http.StatusOK, "user_detail.tmpl", gin.H{
+		RenderHTML(c, http.StatusOK, "user_detail.tmpl", gin.H{
 			"P":      user,
 			"errMsg": sliceErrs,
 		})
@@ -83,7 +83,7 @@ func PutUser(c *gin.Context) {
 		err := user.Create()
 		if err != nil {
 			user.Password = ""
-			c.HTML(http.StatusOK, "user_detail.tmpl", gin.H{
+			RenderHTML(c, http.StatusOK, "user_detail.tmpl", gin.H{
 				"P":      user,
 				"errMsg": "ユーザーの登録に失敗しました",
 			})
@@ -96,7 +96,7 @@ func PutUser(c *gin.Context) {
 	}
 	user.Password = ""
 
-	c.HTML(http.StatusOK, "user_detail.tmpl", gin.H{
+	RenderHTML(c, http.StatusOK, "user_detail.tmpl", gin.H{
 		"P":   user,
 		"msg": msg,
 	})
@@ -108,7 +108,7 @@ func DeleteUser(c *gin.Context) {
 
 	user.Delete()
 
-	c.HTML(http.StatusOK, "user_index.tmpl", gin.H{
+	RenderHTML(c, http.StatusOK, "user_index.tmpl", gin.H{
 		"msg": "削除しました",
 	})
 }

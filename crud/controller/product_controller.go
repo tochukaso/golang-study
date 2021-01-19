@@ -29,8 +29,7 @@ func ShowProducts(c *gin.Context) {
 	products, count := model.ReadProductWithPaging(page, pageSize, orgCode, name)
 	fmt.Println(products)
 	fmt.Println(count)
-
-	c.HTML(http.StatusOK, "product_index.tmpl", gin.H{
+	RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
 		"name":       name,
 		"orgCode":    orgCode,
 		"page":       page,
@@ -49,7 +48,7 @@ func GetProduct(c *gin.Context) {
 	product := model.GetProductFromId(id)
 	fmt.Println(product)
 
-	c.HTML(http.StatusOK, "product_detail.tmpl", gin.H{
+	RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
 		"P": product,
 	})
 }
@@ -66,7 +65,7 @@ func PutProduct(c *gin.Context) {
 		for _, e := range errs {
 			sliceErrs = append(sliceErrs, message.ConvertMessage(e))
 		}
-		c.HTML(http.StatusOK, "product_detail.tmpl", gin.H{
+		RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
 			"P":      product,
 			"errMsg": sliceErrs,
 		})
@@ -78,7 +77,7 @@ func PutProduct(c *gin.Context) {
 	if isFirst {
 		err := product.Create()
 		if err != nil {
-			c.HTML(http.StatusOK, "product_detail.tmpl", gin.H{
+			RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
 				"P":      product,
 				"errMsg": "商品の登録に失敗しました",
 			})
@@ -90,7 +89,7 @@ func PutProduct(c *gin.Context) {
 		msg = "保存しました"
 	}
 
-	c.HTML(http.StatusOK, "product_detail.tmpl", gin.H{
+	RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
 		"P":   product,
 		"msg": msg,
 	})
@@ -104,7 +103,7 @@ func DeleteProduct(c *gin.Context) {
 	fmt.Println("id", id)
 
 	products, count := model.ReadProduct("", "")
-	c.HTML(http.StatusOK, "product_index.tmpl", gin.H{
+	RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
 		"msg":      "削除しました",
 		"products": products,
 		"count":    count,
