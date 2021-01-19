@@ -9,8 +9,8 @@ import (
 
 type Product struct {
 	gorm.Model
-	Name    string `form:"Name" binding:"required" validate:"required"`
-	OrgCode string `form:"OrgCode" validate:"required,ascii"`
+	Name    string `form:"Name" binding:"required" validate:"required" gorm:"not null"`
+	OrgCode string `form:"OrgCode" validate:"required,ascii,duplicateCode" gorm:"unique;not null"`
 	JanCode string `form:"JanCode" validate:"ascii"`
 	Detail  string
 }
@@ -20,9 +20,35 @@ func InitProduct() {
 	db.AutoMigrate(&Product{})
 }
 
-func CreateProduct(product *Product) {
-	db := db.GetDB()
-	db.Create(product)
+func (e Product) Create() error {
+	result := GetDB().Create(&e)
+	return result.Error
+}
+
+func (e Product) Read() Entity {
+	var res = e
+	GetDB().Find(&res)
+	return res
+}
+
+func (e Product) Update() error {
+	result := GetDB().Save(&e)
+	return result.Error
+}
+
+func (e Product) Delete() error {
+	result := GetDB().Delete(&e)
+	return result.Error
+}
+
+func (e Product) GetID() uint {
+	return e.ID
+}
+
+func (e Product) GetFromCode() Entity {
+	var user Product
+	GetDB().Find(&user, "org_code = ?", e.OrgCode)
+	return user
 }
 
 func GetProductFromId(id string) Product {
@@ -41,16 +67,6 @@ func ReadProductWithPaging(page, pageSize int, orgCode, name string) ([]Product,
 	offset := (page - 1) * pageSize
 	db = db.Offset(offset).Limit(pageSize)
 	return readProduct(db, orgCode, name)
-}
-
-func UpdateProduct(product Product) {
-	db := db.GetDB()
-	db.Save(product)
-}
-
-func DeleteProduct(id string) {
-	db := db.GetDB()
-	db.Delete(&Product{}, id)
 }
 
 func readProduct(gdb *gorm.DB, orgCode, name string) ([]Product, int) {

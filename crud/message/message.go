@@ -33,6 +33,8 @@ func ConvertMessage(e validator.FieldError) string {
 		eMsg = field + "は半角英数字で入力してください"
 	case "gte":
 		eMsg = fmt.Sprintf("%vは%v文字以上の長さで入力してください", field, e.Param())
+	case "duplicateCode":
+		eMsg = fmt.Sprintf("%vは既に登録されています", field)
 	default:
 		fmt.Println("tagname", e.Tag())
 		eMsg = field + "は不正です"

@@ -57,7 +57,9 @@ func GetProduct(c *gin.Context) {
 func PutProduct(c *gin.Context) {
 	var product model.Product
 	err := c.ShouldBind(&product)
-	errors := validator.New().Struct(product)
+	validate := validator.New()
+	validate.RegisterValidation("duplicateCode", checkDuplicateOrgCode)
+	errors := validate.Struct(product)
 	if err != nil || errors != nil {
 		errs := errors.(validator.ValidationErrors)
 		sliceErrs := []string{}
@@ -74,10 +76,17 @@ func PutProduct(c *gin.Context) {
 	isFirst := product.ID == 0
 	var msg string
 	if isFirst {
-		model.CreateProduct(&product)
+		err := product.Create()
+		if err != nil {
+			c.HTML(http.StatusOK, "product_detail.tmpl", gin.H{
+				"P":      product,
+				"errMsg": "商品の登録に失敗しました",
+			})
+			return
+		}
 		msg = "登録しました"
 	} else {
-		model.UpdateProduct(product)
+		product.Update()
 		msg = "保存しました"
 	}
 
@@ -88,10 +97,11 @@ func PutProduct(c *gin.Context) {
 }
 
 func DeleteProduct(c *gin.Context) {
-	id := c.PostForm("id")
-	fmt.Println("id", id)
+	id, _ := strconv.Atoi(c.PostForm("id"))
+	product := createIDProduct(id)
 
-	model.DeleteProduct(id)
+	product.Delete()
+	fmt.Println("id", id)
 
 	products, count := model.ReadProduct("", "")
 	c.HTML(http.StatusOK, "product_index.tmpl", gin.H{
@@ -99,4 +109,22 @@ func DeleteProduct(c *gin.Context) {
 		"products": products,
 		"count":    count,
 	})
+}
+
+func createIDProduct(id int) model.Product {
+	var product model.Product
+	product.ID = uint(id)
+	return product
+}
+
+func checkDuplicateOrgCode(fl validator.FieldLevel) bool {
+	var data model.Product
+	data.OrgCode = fl.Field().String()
+	user := data.GetFromCode()
+	fmt.Println("checkDuplicate", user)
+
+	if user.GetID() != 0 {
+		return false
+	}
+	return true
 }
