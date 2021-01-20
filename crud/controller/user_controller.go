@@ -91,6 +91,8 @@ func PutUser(c *gin.Context) {
 		}
 		msg = "登録しました"
 	} else {
+		dbUser := user.Read().(model.User)
+		user.CreatedAt = dbUser.CreatedAt
 		user.Update()
 		msg = "保存しました"
 	}

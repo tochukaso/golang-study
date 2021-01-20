@@ -33,6 +33,7 @@ func loadTemplates(engine *gin.Engine) {
 func addControllers(engine *gin.Engine) {
 	addLoginController(engine)
 	addProductController(engine)
+	addProductUploadController(engine)
 	addUserController(engine)
 }
 
@@ -49,12 +50,22 @@ func addProductController(engine *gin.Engine) {
 	group.Use(sessionCheck)
 	group.GET("/", controller.ShowProducts)
 	group.GET("/detail/:id", controller.GetProduct)
+	group.GET("/download", controller.DownloadProduct)
 
 	group.GET("/new", func(c *gin.Context) {
 		controller.RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{})
 	})
 	group.POST("/", controller.PutProduct)
 	group.POST("/delete", controller.DeleteProduct)
+}
+
+func addProductUploadController(engine *gin.Engine) {
+	controller.InitProduct()
+	group := engine.Group("/product")
+	group.Use(sessionCheck)
+	group.GET("/upload", func(c *gin.Context) {
+		controller.RenderHTML(c, http.StatusOK, "product_upload.tmpl", gin.H{})
+	})
 }
 
 func addUserController(engine *gin.Engine) {

@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/gocarina/gocsv"
 	"omori.jp/message"
 	"omori.jp/model"
 	"omori.jp/pagination"
@@ -19,16 +21,10 @@ func InitProduct() {
 func ShowProducts(c *gin.Context) {
 	name := c.Query("name")
 	orgCode := c.Query("orgCode")
-	fmt.Println("name", name)
-	fmt.Println("orgCode", orgCode)
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
-	fmt.Println("page", page)
-	fmt.Println("pageSize", pageSize)
 
 	products, count := model.ReadProductWithPaging(page, pageSize, orgCode, name)
-	fmt.Println(products)
-	fmt.Println(count)
 	RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
 		"name":       name,
 		"orgCode":    orgCode,
@@ -85,6 +81,8 @@ func PutProduct(c *gin.Context) {
 		}
 		msg = "登録しました"
 	} else {
+		dbProduct := product.Read().(model.Product)
+		product.CreatedAt = dbProduct.CreatedAt
 		product.Update()
 		msg = "保存しました"
 	}
@@ -93,6 +91,7 @@ func PutProduct(c *gin.Context) {
 		"P":   product,
 		"msg": msg,
 	})
+
 }
 
 func DeleteProduct(c *gin.Context) {
@@ -108,6 +107,39 @@ func DeleteProduct(c *gin.Context) {
 		"products": products,
 		"count":    count,
 	})
+}
+
+func DownloadProduct(c *gin.Context) {
+
+	name := c.Query("name")
+	orgCode := c.Query("orgCode")
+	products, count := model.ReadProduct(orgCode, name)
+
+	header := c.Writer.Header()
+	header["Content-type"] = []string{"text/csv"}
+	header["Content-Disposition"] = []string{"attachment; filename= products.csv"}
+	header["Content-Length"] = []string{""}
+
+	fmt.Println("products", products)
+
+	csvStr, err := gocsv.MarshalString(convertProduct(products))
+	fmt.Println("csvStr", csvStr)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
+			"name":       name,
+			"msg":        "ダウンロードに失敗しました",
+			"orgCode":    orgCode,
+			"products":   products,
+			"pagination": pagination.Pagination(count, 1, 10),
+		})
+		return
+	}
+	writer := c.Writer
+	writer.Write([]byte(csvStr))
+	writer.Flush()
+
+	c.Status(http.StatusOK)
 }
 
 func createIDProduct(id int) model.Product {
@@ -128,4 +160,23 @@ func checkDuplicateOrgCode(sl validator.StructLevel) {
 	if dbProduct.GetID() != 0 {
 		sl.ReportError(product.OrgCode, "OrgCode", "OrgCode", "duplicateCode", "")
 	}
+}
+
+func convertProduct(products []model.Product) []ProductCSV {
+	var result []ProductCSV
+	for i, p := range products {
+		result = append(result, ProductCSV{p.ID, p.Name, p.OrgCode, p.JanCode, p.Detail, p.CreatedAt, p.UpdatedAt})
+		fmt.Println("r", result[i])
+	}
+	return result
+}
+
+type ProductCSV struct {
+	ID        uint
+	Name      string    `csv:"商品名"`
+	OrgCode   string    `csv:"商品コード"`
+	JanCode   string    `csv:"Janコード"`
+	Detail    string    `csv:"商品説明"`
+	CreatedAt time.Time `csv:"登録日時"`
+	UpdatedAt time.Time `csv:"更新日時"`
 }

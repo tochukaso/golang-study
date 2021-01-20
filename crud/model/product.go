@@ -9,10 +9,10 @@ import (
 
 type Product struct {
 	gorm.Model
-	Name    string `form:"Name" binding:"required" validate:"required" gorm:"not null"`
+	Name    string `form:"Name" binding:"required" validate:"required" gorm:"not null`
 	OrgCode string `form:"OrgCode" validate:"required,ascii" gorm:"unique;not null"`
 	JanCode string `form:"JanCode" validate:"ascii"`
-	Detail  string
+	Detail  string `form:"Detail"`
 }
 
 func InitProduct() {
