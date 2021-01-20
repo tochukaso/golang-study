@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"strconv"
 
 	"gorm.io/gorm"
 	"omori.jp/db"
@@ -9,10 +10,11 @@ import (
 
 type Product struct {
 	gorm.Model
-	Name    string `form:"Name" binding:"required" validate:"required" gorm:"not null`
-	OrgCode string `form:"OrgCode" validate:"required,ascii" gorm:"unique;not null"`
-	JanCode string `form:"JanCode" validate:"ascii"`
-	Detail  string `form:"Detail"`
+	Name         string `form:"Name" binding:"required" validate:"required" gorm:"not null`
+	OrgCode      string `form:"OrgCode" validate:"required,ascii" gorm:"unique;not null"`
+	JanCode      string `form:"JanCode" validate:"ascii"`
+	Detail       string `form:"Detail"`
+	ProductImage string `form:"ProductImage"`
 }
 
 func InitProduct() {
@@ -49,6 +51,13 @@ func (e Product) GetFromCode() Entity {
 	var user Product
 	GetDB().Find(&user, "org_code = ?", e.OrgCode)
 	return user
+}
+
+func (e Product) GetImagePath() string {
+	if e.ProductImage == "" {
+		return ""
+	}
+	return "/static/assets/product/" + strconv.Itoa(int(e.ID)) + "/" + e.ProductImage
 }
 
 func GetProductFromId(id string) Product {

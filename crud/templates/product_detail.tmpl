@@ -28,7 +28,7 @@
         <div class="row">
           <div class="col-md-12 order-md-1">
             <h4 class="mb-3">商品情報</h4>
-            <form method="post" action="/product/">
+            <form method="post" action="/product/" enctype="multipart/form-data">
               {{ with .P.ID }}
               <div class="row">
                 <div class="col-md-9 mb-2">
@@ -54,6 +54,16 @@
                 <div class="col-md-9 mb-4">
                   <label for="OrgCode">Janコード</label>
                   <input type="text" class="form-control" name="JanCode" id="JanCode" placeholder="" value="{{.P.JanCode}}" >
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-9 mb-4">
+                  <label for="OrgCode">商品画像</label>
+                  <input type="file" class="form-control" name="productImage" />
+                  {{ with .P.GetImagePath}}
+                    <img src="{{ . }}" class="img-thumbnail" width="150px;">
+                  {{ end  }}
+                  <input type="hidden" name="ProductImage" value="{{.P.ProductImage}}"/>
                 </div>
               </div>
               <div class="row">

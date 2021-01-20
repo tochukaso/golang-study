@@ -59,6 +59,7 @@
               <thead>
                 <tr>
                   <th scope="col">ID</th>
+                  <th scope="col">画像</th>
                   <th scope="col">商品名</th>
                   <th scope="col">商品コード</th>
                   <th scope="col">Janコード</th>
@@ -70,6 +71,11 @@
                   {{ range $i, $v := . }}
                   <tr>
                     <th scope="row"><a href="/product/detail/{{.ID}}">{{.ID}}</a></th>
+                    <td>
+                    {{ with .GetImagePath}}
+                      <img src="{{ . }}" class="img-thumbnail" width="40px;">
+                    {{ end  }}
+                    </td>
                     <td>{{ .Name }}</td>
                     <td>{{ .OrgCode }}</td>
                     <td>{{ .JanCode }}</td>

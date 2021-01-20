@@ -3,12 +3,14 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/gocarina/gocsv"
 	"omori.jp/csv"
+	"omori.jp/env"
 	"omori.jp/message"
 	"omori.jp/model"
 	"omori.jp/pagination"
@@ -61,7 +63,24 @@ func PutProduct(c *gin.Context) {
 		return
 	}
 
+	file, fileErr := c.FormFile("productImage")
+	if fileErr == nil {
+		product.ProductImage = file.Filename
+	}
+
 	msg, _ := saveProduct(product)
+	if fileErr == nil {
+		productID := product.ID
+		if productID == 0 {
+			productID = model.GetProductFromCode(product.OrgCode).GetID()
+		}
+		dirPath := env.GetEnv().ProductImagePath + "/" + strconv.Itoa(int(productID))
+		os.Mkdir(dirPath, 0755)
+		err = c.SaveUploadedFile(file, dirPath+"/"+file.Filename)
+		if err != nil {
+			fmt.Println("画像アップロードエラー", err)
+		}
+	}
 
 	RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
 		"P":   product,
@@ -176,6 +195,9 @@ func saveProduct(product model.Product) (string, error) {
 	} else {
 		dbProduct := product.Read().(model.Product)
 		product.CreatedAt = dbProduct.CreatedAt
+		if product.ProductImage == "" {
+			product.ProductImage = dbProduct.ProductImage
+		}
 		product.Update()
 		msg = "保存しました"
 	}
