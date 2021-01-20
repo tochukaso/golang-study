@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/gocarina/gocsv"
+	"omori.jp/csv"
 	"omori.jp/message"
 	"omori.jp/model"
 	"omori.jp/pagination"
@@ -52,40 +52,16 @@ func GetProduct(c *gin.Context) {
 func PutProduct(c *gin.Context) {
 	var product model.Product
 	err := c.ShouldBind(&product)
-	validate := validator.New()
-	validate.RegisterStructValidation(checkDuplicateOrgCode, model.Product{})
-	errors := validate.Struct(product)
+	errors := validateProduct(product)
 	if err != nil || errors != nil {
-		errs := errors.(validator.ValidationErrors)
-		sliceErrs := []string{}
-		for _, e := range errs {
-			sliceErrs = append(sliceErrs, message.ConvertMessage(e))
-		}
 		RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
 			"P":      product,
-			"errMsg": sliceErrs,
+			"errMsg": errors,
 		})
 		return
 	}
 
-	isFirst := product.ID == 0
-	var msg string
-	if isFirst {
-		err := product.Create()
-		if err != nil {
-			RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
-				"P":      product,
-				"errMsg": "商品の登録に失敗しました",
-			})
-			return
-		}
-		msg = "登録しました"
-	} else {
-		dbProduct := product.Read().(model.Product)
-		product.CreatedAt = dbProduct.CreatedAt
-		product.Update()
-		msg = "保存しました"
-	}
+	msg, _ := saveProduct(product)
 
 	RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
 		"P":   product,
@@ -162,21 +138,47 @@ func checkDuplicateOrgCode(sl validator.StructLevel) {
 	}
 }
 
-func convertProduct(products []model.Product) []ProductCSV {
-	var result []ProductCSV
+func convertProduct(products []model.Product) []csv.ProductCSV {
+	var result []csv.ProductCSV
 	for i, p := range products {
-		result = append(result, ProductCSV{p.ID, p.Name, p.OrgCode, p.JanCode, p.Detail, p.CreatedAt, p.UpdatedAt})
+		result = append(result, csv.ProductCSV{p.ID, p.Name, p.OrgCode, p.JanCode, p.Detail, p.CreatedAt, p.UpdatedAt})
 		fmt.Println("r", result[i])
 	}
 	return result
 }
 
-type ProductCSV struct {
-	ID        uint
-	Name      string    `csv:"商品名"`
-	OrgCode   string    `csv:"商品コード"`
-	JanCode   string    `csv:"Janコード"`
-	Detail    string    `csv:"商品説明"`
-	CreatedAt time.Time `csv:"登録日時"`
-	UpdatedAt time.Time `csv:"更新日時"`
+func validateProduct(product model.Product) []string {
+	validate := validator.New()
+	validate.RegisterStructValidation(checkDuplicateOrgCode, model.Product{})
+	errors := validate.Struct(product)
+	if errors == nil {
+		return nil
+	}
+	errs := errors.(validator.ValidationErrors)
+	sliceErrs := []string{}
+	for _, e := range errs {
+		sliceErrs = append(sliceErrs, message.ConvertMessage(e))
+	}
+	return sliceErrs
+}
+
+func saveProduct(product model.Product) (string, error) {
+	isFirst := product.ID == 0
+	var msg string
+	var err error
+	if isFirst {
+		err = product.Create()
+		if err != nil {
+			msg = "商品の登録に失敗しました"
+		} else {
+			msg = "登録しました"
+		}
+	} else {
+		dbProduct := product.Read().(model.Product)
+		product.CreatedAt = dbProduct.CreatedAt
+		product.Update()
+		msg = "保存しました"
+	}
+
+	return msg, err
 }

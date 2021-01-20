@@ -66,6 +66,7 @@ func addProductUploadController(engine *gin.Engine) {
 	group.GET("/upload", func(c *gin.Context) {
 		controller.RenderHTML(c, http.StatusOK, "product_upload.tmpl", gin.H{})
 	})
+	group.POST("/upload", controller.UploadProduct)
 }
 
 func addUserController(engine *gin.Engine) {
