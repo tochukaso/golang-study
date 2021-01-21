@@ -8,6 +8,10 @@ import (
 
 type Env struct {
 	ProductImagePath string
+	SmtpFrom         string
+	SmtpHost         string
+	SmtpPort         string
+	SmtpPassword     string
 }
 
 func GetEnv() Env {

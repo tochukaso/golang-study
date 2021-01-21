@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
+	"omori.jp/mail"
 	"omori.jp/message"
 	"omori.jp/model"
 	"omori.jp/pagination"
@@ -90,6 +91,7 @@ func PutUser(c *gin.Context) {
 			return
 		}
 		msg = "登録しました"
+		mail.SendUserRegisterMail(user)
 	} else {
 		dbUser := user.Read().(model.User)
 		user.CreatedAt = dbUser.CreatedAt

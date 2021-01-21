@@ -31,9 +31,9 @@ func ListTemplateValiable(code MailType) [][]string {
 	switch code {
 	case UserRegister:
 		result = [][]string{
-			{"<<UserCode>>", "ユーザーコード"},
-			{"<<UserName>>", "ユーザー名"},
-			{"<<Email>>", "メールアドレス"},
+			{"{{.UserCode}}", "ユーザーコード"},
+			{"{{.UserName}}", "ユーザー名"},
+			{"{{.Email}}", "メールアドレス"},
 		}
 	}
 
