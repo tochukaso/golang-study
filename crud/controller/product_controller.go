@@ -70,12 +70,11 @@ func PutProduct(c *gin.Context) {
 	}
 
 	msg, _ := saveProduct(product)
+	if product.ID == 0 {
+		product.ID = model.GetProductFromCode(product.OrgCode).GetID()
+	}
 	if fileErr == nil {
-		productID := product.ID
-		if productID == 0 {
-			productID = model.GetProductFromCode(product.OrgCode).GetID()
-		}
-		dirPath := env.GetEnv().ProductImagePath + "/" + strconv.Itoa(int(productID))
+		dirPath := env.GetEnv().ProductImagePath + "/" + strconv.Itoa(int(product.ID))
 		os.Mkdir(dirPath, 0755)
 		err = c.SaveUploadedFile(file, dirPath+"/"+file.Filename)
 		if err != nil {
