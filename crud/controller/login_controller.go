@@ -55,6 +55,21 @@ func Logout(c *gin.Context) {
 }
 
 func saveLoginInfo(c *gin.Context, user model.User) {
+	/**
+	store := cookie.NewStore([]byte("secret"))
+	store.Options(sessions.Options{
+		"",
+		"",
+		0,
+		true,
+		true,
+		http.SameSiteStrictMode,
+	})
+
+	s := &sessions.session{"mysession", c.Request, store, nil, false, c.Writer}
+	c.Set(sessions.DefaultKey, s)
+	**/
+
 	session := sessions.Default(c)
 	session.Set("UserID", int(user.ID))
 	session.Save()

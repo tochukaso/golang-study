@@ -16,6 +16,16 @@ import (
 func main() {
 	engine := gin.Default()
 	store := cookie.NewStore([]byte("secret"))
+	/** comment out Cookie options
+	store.Options(sessions.Options{
+		"",
+		"",
+		0,
+		false,
+		true,
+		http.SameSiteStrictMode,
+	})
+	**/
 	engine.Use(sessions.Sessions("mysession", store))
 	engine.Use(middleware.RecordUaAndTime)
 	engine.LoadHTMLGlob("templates/*.tmpl")
@@ -35,6 +45,7 @@ func addControllers(engine *gin.Engine) {
 	addProductController(engine)
 	addProductUploadController(engine)
 	addUserController(engine)
+	addMailController(engine)
 }
 
 func addLoginController(engine *gin.Engine) {
@@ -81,6 +92,16 @@ func addUserController(engine *gin.Engine) {
 	})
 	group.POST("/", controller.PutUser)
 	group.POST("/delete", controller.DeleteUser)
+}
+
+func addMailController(engine *gin.Engine) {
+	controller.InitMailTemplate()
+	group := engine.Group("/mail")
+	group.Use(sessionCheck)
+	group.GET("/", controller.ShowMailTemplates)
+	group.GET("/detail/:code", controller.GetMailTemplate)
+
+	group.POST("/", controller.PutMailTemplate)
 }
 
 func sessionCheck(c *gin.Context) {

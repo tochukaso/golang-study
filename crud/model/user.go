@@ -11,6 +11,7 @@ type User struct {
 	UserCode string `form:"UserCode" binding:"required" validate:"required,ascii" gorm:"unique;not null"`
 	UserName string `form:"UserName" binding:"required" validate:"required" gorm:"not null"`
 	Password string `form:"Password" binding:"required" validate:"required,ascii,gte=8" gorm:"not null"`
+	Mail     string `form:"Mail" validate:"email" `
 }
 
 func InitUser() {
