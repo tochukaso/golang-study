@@ -10,12 +10,14 @@ func ConvertMessage(e validator.FieldError) string {
 
 	var field string
 	switch e.Field() {
-	case "Name":
+	case "ProductName":
 		field = "商品名"
 	case "OrgCode":
 		field = "商品コード"
 	case "JanCode":
 		field = "Janコード"
+	case "ProductDetail":
+		field = "商品詳細"
 	case "UserName":
 		field = "ユーザー名"
 	case "UserCode":

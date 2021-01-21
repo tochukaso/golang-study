@@ -10,11 +10,11 @@ import (
 
 type Product struct {
 	gorm.Model
-	Name         string `form:"Name" binding:"required" validate:"required" gorm:"not null`
-	OrgCode      string `form:"OrgCode" validate:"required,ascii" gorm:"unique;not null"`
-	JanCode      string `form:"JanCode" validate:"ascii"`
-	Detail       string `form:"Detail"`
-	ProductImage string `form:"ProductImage"`
+	ProductName   string `form:"ProductName" validate:"required" gorm:"not null`
+	OrgCode       string `form:"OrgCode" validate:"required,ascii" gorm:"unique;not null"`
+	JanCode       string `form:"JanCode" validate:"ascii"`
+	ProductDetail string `form:"ProductDetail"`
+	ProductImage  string `form:"ProductImage"`
 }
 
 func InitProduct() {
@@ -73,23 +73,23 @@ func GetProductFromCode(code string) Product {
 	return product
 }
 
-func ReadProduct(orgCode, name string) ([]Product, int) {
-	return readProduct(db.GetDB(), orgCode, name)
+func ReadProduct(orgCode, productName string) ([]Product, int) {
+	return readProduct(db.GetDB(), orgCode, productName)
 }
 
-func ReadProductWithPaging(page, pageSize int, orgCode, name string) ([]Product, int) {
+func ReadProductWithPaging(page, pageSize int, orgCode, productName string) ([]Product, int) {
 	db := db.GetDB()
 	offset := (page - 1) * pageSize
 	db = db.Offset(offset).Limit(pageSize)
-	return readProduct(db, orgCode, name)
+	return readProduct(db, orgCode, productName)
 }
 
-func readProduct(gdb *gorm.DB, orgCode, name string) ([]Product, int) {
+func readProduct(gdb *gorm.DB, orgCode, productName string) ([]Product, int) {
 	var products []Product
 	var count int64
-	where := []interface{}{"org_code LIKE ? and name LIKE ?"}
+	where := []interface{}{"org_code LIKE ? and product_name LIKE ?"}
 	args := []interface{}{fmt.Sprintf("%%%s%%", orgCode),
-		fmt.Sprintf("%%%s%%", name)}
+		fmt.Sprintf("%%%s%%", productName)}
 
 	gdb.Find(&products, append(where, args...)...)
 	fmt.Println("products", products)

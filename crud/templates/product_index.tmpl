@@ -26,8 +26,8 @@
             <form method="get" action="/product/" id="searchForm">
               <div class="row">
                 <div class="col-md-6 mb-4">
-                  <label for="name">商品名</label>
-                  <input type="text" class="form-control" name="name" id="name" placeholder="" value="{{.name}}" >
+                  <label for="productName">商品名</label>
+                  <input type="text" class="form-control" name="productName" id="productName" placeholder="" value="{{.name}}" >
                 </div>
                 <div class="col-md-6 mb-4">
                   <label for="orgCode">商品コード</label>
@@ -76,7 +76,7 @@
                       <img src="{{ . }}" class="img-thumbnail" width="40px;">
                     {{ end  }}
                     </td>
-                    <td>{{ .Name }}</td>
+                    <td>{{ .ProductName }}</td>
                     <td>{{ .OrgCode }}</td>
                     <td>{{ .JanCode }}</td>
                     <td>{{ .UpdatedAt }}</td>

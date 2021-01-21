@@ -9,7 +9,7 @@ type MailTemplate struct {
 	MailCode   int    `form:"MailCode" validate:"required,numeric" gorm:"unique;not null"`
 	Subject    string `form:"Subject" validate:"required" gorm:"not null"`
 	From       string `form:"From" validate:"required" gorm:"not null"`
-	CC         string `form:"CC"`
+	Cc         string `form:"Cc"`
 	MailDetail string `form:"MailDetail"`
 }
 

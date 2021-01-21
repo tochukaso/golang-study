@@ -11,6 +11,7 @@ import (
 	"github.com/gocarina/gocsv"
 	"omori.jp/csv"
 	"omori.jp/env"
+	"omori.jp/mail"
 	"omori.jp/message"
 	"omori.jp/model"
 	"omori.jp/pagination"
@@ -21,20 +22,20 @@ func InitProduct() {
 }
 
 func ShowProducts(c *gin.Context) {
-	name := c.Query("name")
+	productName := c.Query("productName")
 	orgCode := c.Query("orgCode")
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
 
-	products, count := model.ReadProductWithPaging(page, pageSize, orgCode, name)
+	products, count := model.ReadProductWithPaging(page, pageSize, orgCode, productName)
 	RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
-		"name":       name,
-		"orgCode":    orgCode,
-		"page":       page,
-		"count":      count,
-		"pageSize":   pageSize,
-		"products":   products,
-		"pagination": pagination.Pagination(count, page, pageSize),
+		"productName": productName,
+		"orgCode":     orgCode,
+		"page":        page,
+		"count":       count,
+		"pageSize":    pageSize,
+		"products":    products,
+		"pagination":  pagination.Pagination(count, page, pageSize),
 	})
 
 }
@@ -106,9 +107,9 @@ func DeleteProduct(c *gin.Context) {
 
 func DownloadProduct(c *gin.Context) {
 
-	name := c.Query("name")
+	productName := c.Query("productName")
 	orgCode := c.Query("orgCode")
-	products, count := model.ReadProduct(orgCode, name)
+	products, count := model.ReadProduct(orgCode, productName)
 
 	header := c.Writer.Header()
 	header["Content-type"] = []string{"text/csv"}
@@ -122,11 +123,11 @@ func DownloadProduct(c *gin.Context) {
 	if err != nil {
 		c.Status(http.StatusBadRequest)
 		RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
-			"name":       name,
-			"msg":        "ダウンロードに失敗しました",
-			"orgCode":    orgCode,
-			"products":   products,
-			"pagination": pagination.Pagination(count, 1, 10),
+			"productName": productName,
+			"msg":         "ダウンロードに失敗しました",
+			"orgCode":     orgCode,
+			"products":    products,
+			"pagination":  pagination.Pagination(count, 1, 10),
 		})
 		return
 	}
@@ -160,7 +161,7 @@ func checkDuplicateOrgCode(sl validator.StructLevel) {
 func convertProduct(products []model.Product) []csv.ProductCSV {
 	var result []csv.ProductCSV
 	for i, p := range products {
-		result = append(result, csv.ProductCSV{p.ID, p.Name, p.OrgCode, p.JanCode, p.Detail, p.CreatedAt, p.UpdatedAt})
+		result = append(result, csv.ProductCSV{p.ID, p.ProductName, p.OrgCode, p.JanCode, p.ProductDetail, p.CreatedAt, p.UpdatedAt})
 		fmt.Println("r", result[i])
 	}
 	return result
@@ -192,6 +193,7 @@ func saveProduct(product model.Product) (string, error) {
 		} else {
 			msg = "登録しました"
 		}
+		mail.SendProductRegisterMail(product)
 	} else {
 		dbProduct := product.Read().(model.Product)
 		product.CreatedAt = dbProduct.CreatedAt

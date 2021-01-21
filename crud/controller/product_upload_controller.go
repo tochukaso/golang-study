@@ -90,10 +90,10 @@ func convProduct(record []string) (*model.Product, string) {
 		return nil, fmt.Sprintf("IDに不正な値(%v)が設定されています", record[1])
 	}
 	product.ID = id
-	product.Name = record[1]
+	product.ProductName = record[1]
 	product.OrgCode = record[2]
 	product.JanCode = record[3]
-	product.Detail = record[4]
+	product.ProductDetail = record[4]
 	return &product, ""
 }
 

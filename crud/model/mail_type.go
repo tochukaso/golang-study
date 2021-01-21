@@ -35,6 +35,14 @@ func ListTemplateValiable(code MailType) [][]string {
 			{"{{.UserName}}", "ユーザー名"},
 			{"{{.Email}}", "メールアドレス"},
 		}
+
+	case ProductRegister:
+		result = [][]string{
+			{"{{.ProductName}}", "商品名"},
+			{"{{.OrgCode}}", "商品コード"},
+			{"{{.JanCode}}", "Janコード"},
+			{"{{.ProductDetail}}", "商品詳細"},
+		}
 	}
 
 	return result

@@ -30,11 +30,6 @@
             <h4 class="mb-3">メールテンプレート情報</h4>
             <form method="post" action="/mail/" >
               {{ with .P.ID }}
-              <div class="row">
-                <div class="col-md-9 mb-2">
-                  <label>ID&nbsp;:&nbsp;{{.}}</label>
-                </div>
-              </div>
                 <input type="hidden" name="ID" value="{{.}}">
               {{ end }}
               <input type="hidden" name="MailCode" value="{{.P.MailCode}}">
@@ -53,8 +48,8 @@
               </div>
               <div class="row">
                 <div class="col-md-9 mb-4">
-                  <label for="OrgCode">CC</label>
-                  <input type="text" class="form-control" name="cc" id="CC" placeholder="" value="{{.P.CC}}" >
+                  <label for="OrgCode">Cc</label>
+                  <input type="text" class="form-control" name="Cc" id="Cc" placeholder="" value="{{.P.Cc}}" >
                 </div>
               </div>
               <div class="row">

@@ -47,7 +47,7 @@ goのtemplate側では、パラメーターを使用してhtmlファイルを組
 
 ``` go
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"name":       name,
+		"productName":       productName,
 		"orgCode":    orgCode,
 		"page":       page,
 		"count":      count,
@@ -73,10 +73,10 @@ ORMマッパーとして使用します。
 
 type Product struct {
 	gorm.Model
-	Name    string `form:"Name" binding:"required" validate:"required"`
+	ProductName    string `form:"ProductName" binding:"required" validate:"required"`
 	OrgCode string `form:"OrgCode" validate:"required,ascii"`
 	JanCode string `form:"JanCode" validate:"ascii"`
-	Detail  string
+	ProductDetail  string
 }
 
 func InitProduct() {
@@ -100,6 +100,6 @@ DBへのデータの更新は以下のように構造体を指定して保存す
 	db := db.GetDB()
 	offset := (page - 1) * pageSize
 	db = db.Offset(offset).Limit(pageSize)
-	return readProduct(db, orgCode, name)
+	return readProduct(db, orgCode, productName)
 ```
 
