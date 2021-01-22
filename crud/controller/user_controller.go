@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	csrf "github.com/utrack/gin-csrf"
 	"golang.org/x/crypto/bcrypt"
 	"omori.jp/mail"
 	"omori.jp/message"
@@ -34,7 +33,6 @@ func ShowUsers(c *gin.Context) {
 	log.Println(count)
 
 	RenderHTML(c, http.StatusOK, "user_index.tmpl", gin.H{
-		"_csrf":      csrf.GetToken(c),
 		"userName":   userName,
 		"userCode":   userCode,
 		"page":       page,
@@ -54,8 +52,7 @@ func GetUser(c *gin.Context) {
 	user.Password = ""
 
 	RenderHTML(c, http.StatusOK, "user_detail.tmpl", gin.H{
-		"_csrf": csrf.GetToken(c),
-		"P":     user,
+		"P": user,
 	})
 }
 
@@ -104,9 +101,8 @@ func PutUser(c *gin.Context) {
 	user.Password = ""
 
 	RenderHTML(c, http.StatusOK, "user_detail.tmpl", gin.H{
-		"_csrf": csrf.GetToken(c),
-		"P":     user,
-		"msg":   msg,
+		"P":   user,
+		"msg": msg,
 	})
 }
 

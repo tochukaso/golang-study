@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/gocarina/gocsv"
-	csrf "github.com/utrack/gin-csrf"
 	"omori.jp/csv"
 	"omori.jp/env"
 	"omori.jp/mail"
@@ -18,27 +17,24 @@ import (
 	"omori.jp/pagination"
 )
 
+type productSearchQuery struct {
+	productName string
+	orgCode     string
+	page        int
+	pageSize    int
+}
+
+const (
+	productDefaultPage     int = 1
+	productDefaultPageSize int = 10
+)
+
 func InitProduct() {
 	model.InitProduct()
 }
 
 func ShowProducts(c *gin.Context) {
-	productName := c.Query("productName")
-	orgCode := c.Query("orgCode")
-	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
-
-	products, count := model.ReadProductWithPaging(page, pageSize, orgCode, productName)
-	RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
-		"productName": productName,
-		"orgCode":     orgCode,
-		"page":        page,
-		"count":       count,
-		"pageSize":    pageSize,
-		"products":    products,
-		"pagination":  pagination.Pagination(count, page, pageSize),
-	})
-
+	renderProductIndexView(c, extractProductSearchQuery(c), "")
 }
 
 func GetProduct(c *gin.Context) {
@@ -49,8 +45,7 @@ func GetProduct(c *gin.Context) {
 	log.Println(product)
 
 	RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
-		"_csrf": csrf.GetToken(c),
-		"P":     product,
+		"P": product,
 	})
 }
 
@@ -85,9 +80,8 @@ func PutProduct(c *gin.Context) {
 	}
 
 	RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
-		"_csrf": csrf.GetToken(c),
-		"P":     product,
-		"msg":   msg,
+		"P":   product,
+		"msg": msg,
 	})
 
 }
@@ -97,21 +91,22 @@ func DeleteProduct(c *gin.Context) {
 	product := createIDProduct(id)
 
 	product.Delete()
-	log.Println("id", id)
-
-	products, count := model.ReadProduct("", "")
-	RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
-		"msg":      "削除しました",
-		"products": products,
-		"count":    count,
-	})
+	renderDefaultProductIndexView(c, "削除しました")
 }
 
 func DownloadProduct(c *gin.Context) {
 
 	productName := c.Query("productName")
 	orgCode := c.Query("orgCode")
-	products, count := model.ReadProduct(orgCode, productName)
+	products, _ := model.ReadProduct(orgCode, productName)
+
+	csvStr, err := gocsv.MarshalString(convertProduct(products))
+	log.Println("csvStr", csvStr)
+	if err == nil {
+		renderProductIndexView(c, extractProductSearchQuery(c), "ダウンロードに失敗しました")
+		c.Abort()
+		return
+	}
 
 	header := c.Writer.Header()
 	header["Content-type"] = []string{"text/csv"}
@@ -119,20 +114,6 @@ func DownloadProduct(c *gin.Context) {
 	header["Content-Length"] = []string{""}
 
 	log.Println("products", products)
-
-	csvStr, err := gocsv.MarshalString(convertProduct(products))
-	log.Println("csvStr", csvStr)
-	if err != nil {
-		c.Status(http.StatusBadRequest)
-		RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
-			"productName": productName,
-			"msg":         "ダウンロードに失敗しました",
-			"orgCode":     orgCode,
-			"products":    products,
-			"pagination":  pagination.Pagination(count, 1, 10),
-		})
-		return
-	}
 	writer := c.Writer
 	writer.Write([]byte(csvStr))
 	writer.Flush()
@@ -207,4 +188,43 @@ func saveProduct(product model.Product) (string, error) {
 	}
 
 	return msg, err
+}
+
+func renderProductIndexView(c *gin.Context, query productSearchQuery, msg string) {
+	products, count := model.ReadProductWithPaging(
+		query.page,
+		query.pageSize,
+		query.orgCode,
+		query.productName,
+	)
+
+	RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
+		"msg":         msg,
+		"productName": query.productName,
+		"orgCode":     query.orgCode,
+		"page":        query.page,
+		"count":       count,
+		"pageSize":    query.pageSize,
+		"products":    products,
+		"pagination":  pagination.Pagination(count, query.page, query.pageSize),
+	})
+}
+
+func renderDefaultProductIndexView(c *gin.Context, msg string) {
+	renderProductIndexView(c, createDefaultProductSearchQuery(), msg)
+}
+
+func createDefaultProductSearchQuery() productSearchQuery {
+	return productSearchQuery{"", "", productDefaultPage, productDefaultPageSize}
+}
+
+func extractProductSearchQuery(c *gin.Context) productSearchQuery {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", strconv.Itoa(productDefaultPage)))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", strconv.Itoa(productDefaultPageSize)))
+	return productSearchQuery{
+		c.Query("productName"),
+		c.Query("orgCode"),
+		page,
+		pageSize,
+	}
 }

@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	csrf "github.com/utrack/gin-csrf"
 	"omori.jp/message"
 	"omori.jp/model"
 )
@@ -102,9 +101,8 @@ func PutMailTemplate(c *gin.Context) {
 	}
 
 	RenderHTML(c, http.StatusOK, "mail_detail.tmpl", gin.H{
-		"_csrf": csrf.GetToken(c),
-		"P":     mailTemplate,
-		"msg":   msg,
+		"P":   mailTemplate,
+		"msg": msg,
 	})
 }
 

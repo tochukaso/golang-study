@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"omori.jp/model"
-	"omori.jp/pagination"
 )
 
 func ShowLogin(c *gin.Context) {
@@ -24,16 +23,7 @@ func AttemptLogin(c *gin.Context) {
 
 	if bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(password)) == nil {
 		saveLoginInfo(c, dbUser)
-		products, count := model.ReadProduct("", "")
-		page := 1
-		pageSize := 10
-		RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
-			"products":   products,
-			"count":      count,
-			"page":       page,
-			"pageSize":   pageSize,
-			"pagination": pagination.Pagination(count, page, pageSize),
-		})
+		renderDefaultProductIndexView(c, "")
 	} else {
 		RenderHTML(c, http.StatusOK, "login.tmpl", gin.H{
 			"userCode": userCode,
