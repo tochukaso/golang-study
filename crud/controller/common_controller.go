@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	csrf "github.com/utrack/gin-csrf"
@@ -12,6 +12,6 @@ func RenderHTML(c *gin.Context, status int, page string, params map[string]inter
 	params["sUserName"], _ = c.Get("UserName")
 	params["sUserCode"], _ = c.Get("UserCode")
 	params["_csrf"] = csrf.GetToken(c)
-	fmt.Println("params", params)
+	log.Println("params", params)
 	c.HTML(status, page, params)
 }

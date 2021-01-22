@@ -16,12 +16,12 @@ func SendMail(from string, to []string, subject, mailTemplate string, variables 
 
 	env := env.GetEnv()
 	if env.SmtpHost == "" {
-		fmt.Println("SMTPのホストが未設定のめメールは送信しません。")
+		log.Println("SMTPのホストが未設定のめメールは送信しません。")
 		return nil
 	}
 	if env.SmtpHost == "localhost" {
 		error := usePostfix(from, to, subject, mailTemplate, variables)
-		fmt.Println("postfix err", error)
+		log.Println("postfix err", error)
 		return error
 	}
 	// Authentication.
@@ -33,13 +33,13 @@ func SendMail(from string, to []string, subject, mailTemplate string, variables 
 
 	t, err := template.New("Mail").Parse(mailTemplate)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	t.Execute(&body, variables)
 
 	err = smtp.SendMail(env.SmtpHost+":"+env.SmtpPort, auth, env.SmtpFrom, to, body.Bytes())
 	if err != nil {
-		fmt.Println("sendmail error", err)
+		log.Println("sendmail error", err)
 	}
 	return err
 }
@@ -114,7 +114,7 @@ func usePostfix(from string, to []string, subject, mailTemplate string, variable
 
 	t, err := template.New("Mail").Parse(mailTemplate)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 
 	t.Execute(w, variables)

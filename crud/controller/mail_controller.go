@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -20,7 +20,7 @@ func ShowMailTemplates(c *gin.Context) {
 	templates := model.ListMailType()
 	var list []map[string]interface{}
 	for _, t := range templates {
-		fmt.Println("t", t)
+		log.Println("t", t)
 		template := model.GetMailTemplateFromCode(int(t))
 		mailType := model.GetMailType(t)
 		v := make(map[string]interface{})
@@ -40,17 +40,17 @@ func ShowMailTemplates(c *gin.Context) {
 
 func GetMailTemplate(c *gin.Context) {
 	rawCode := c.Param("code")
-	fmt.Println("code", rawCode)
+	log.Println("code", rawCode)
 
 	code, err := strconv.Atoi(rawCode)
 	if err != nil {
-		fmt.Println("code(%v)が不正です。", rawCode)
+		log.Println("code(%v)が不正です。", rawCode)
 		c.Redirect(301, "/mail/")
 		return
 	}
 
 	mail := model.GetMailTemplateFromCode(code)
-	fmt.Println(mail)
+	log.Println(mail)
 
 	if mail.ID == 0 {
 		mail.MailCode = code
@@ -115,7 +115,7 @@ func checkDuplicateMailCode(sl validator.StructLevel) {
 		return
 	}
 	dbMailTemplate := model.GetMailTemplateFromCode(template.MailCode)
-	fmt.Println("dbMailTemplate", dbMailTemplate)
+	log.Println("dbMailTemplate", dbMailTemplate)
 
 	if dbMailTemplate.GetID() != 0 {
 		sl.ReportError(template.MailCode, "MailCode", "MailCode", "duplicateCode", "")

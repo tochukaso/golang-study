@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -43,10 +43,10 @@ func ShowProducts(c *gin.Context) {
 
 func GetProduct(c *gin.Context) {
 	id := c.Param("id")
-	fmt.Println("id", id)
+	log.Println("id", id)
 
 	product := model.GetProductFromId(id)
-	fmt.Println(product)
+	log.Println(product)
 
 	RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
 		"_csrf": csrf.GetToken(c),
@@ -80,7 +80,7 @@ func PutProduct(c *gin.Context) {
 		os.Mkdir(dirPath, 0755)
 		err = c.SaveUploadedFile(file, dirPath+"/"+file.Filename)
 		if err != nil {
-			fmt.Println("画像アップロードエラー", err)
+			log.Println("画像アップロードエラー", err)
 		}
 	}
 
@@ -97,7 +97,7 @@ func DeleteProduct(c *gin.Context) {
 	product := createIDProduct(id)
 
 	product.Delete()
-	fmt.Println("id", id)
+	log.Println("id", id)
 
 	products, count := model.ReadProduct("", "")
 	RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
@@ -118,10 +118,10 @@ func DownloadProduct(c *gin.Context) {
 	header["Content-Disposition"] = []string{"attachment; filename= products.csv"}
 	header["Content-Length"] = []string{""}
 
-	fmt.Println("products", products)
+	log.Println("products", products)
 
 	csvStr, err := gocsv.MarshalString(convertProduct(products))
-	fmt.Println("csvStr", csvStr)
+	log.Println("csvStr", csvStr)
 	if err != nil {
 		c.Status(http.StatusBadRequest)
 		RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
@@ -153,7 +153,7 @@ func checkDuplicateOrgCode(sl validator.StructLevel) {
 		return
 	}
 	dbProduct := model.GetProductFromCode(product.OrgCode)
-	fmt.Println("dbProduct", dbProduct)
+	log.Println("dbProduct", dbProduct)
 
 	if dbProduct.GetID() != 0 {
 		sl.ReportError(product.OrgCode, "OrgCode", "OrgCode", "duplicateCode", "")
@@ -164,7 +164,7 @@ func convertProduct(products []model.Product) []csv.ProductCSV {
 	var result []csv.ProductCSV
 	for i, p := range products {
 		result = append(result, csv.ProductCSV{p.ID, p.ProductName, p.OrgCode, p.JanCode, p.ProductDetail, p.CreatedAt, p.UpdatedAt})
-		fmt.Println("r", result[i])
+		log.Println("r", result[i])
 	}
 	return result
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"strconv"
@@ -17,7 +18,7 @@ func UploadProduct(c *gin.Context) {
 
 	filePath, err := c.FormFile("productFile")
 	if err != nil {
-		fmt.Println("err", err)
+		log.Println("err", err)
 		RenderHTML(c, http.StatusOK, "product_upload.tmpl", gin.H{
 			"errMsg": "CSVファイルが設定されていません。",
 		})

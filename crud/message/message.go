@@ -2,6 +2,7 @@ package message
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -40,7 +41,7 @@ func ConvertMessage(e validator.FieldError) string {
 	case "duplicateCode":
 		eMsg = fmt.Sprintf("%vは既に登録されています", field)
 	default:
-		fmt.Println("tagname", e.Tag())
+		log.Println("tagname", e.Tag())
 		eMsg = field + "は不正です"
 	}
 	return eMsg

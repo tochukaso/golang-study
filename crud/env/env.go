@@ -12,6 +12,8 @@ type Env struct {
 	SmtpHost         string
 	SmtpPort         string
 	SmtpPassword     string
+	LogFilePath      string
+	SQLLogLevel      string
 }
 
 func GetEnv() Env {

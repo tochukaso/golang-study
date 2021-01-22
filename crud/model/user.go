@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -76,9 +77,9 @@ func readUser(gdb *gorm.DB, code, name string) ([]User, int) {
 		fmt.Sprintf("%%%s%%", name)}
 
 	GetDB().Find(&users, append(where, args...)...)
-	fmt.Println("users", users)
+	log.Println("users", users)
 	GetDB().Model(&User{}).Where(where[0], args...).Count(&count)
 
-	fmt.Println(count)
+	log.Println(count)
 	return users, int(count)
 }

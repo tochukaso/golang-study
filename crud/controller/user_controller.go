@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -22,16 +22,16 @@ func InitUser() {
 func ShowUsers(c *gin.Context) {
 	userName := c.Query("userName")
 	userCode := c.Query("userCode")
-	fmt.Println("userName", userName)
-	fmt.Println("userCode", userCode)
+	log.Println("userName", userName)
+	log.Println("userCode", userCode)
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
-	fmt.Println("page", page)
-	fmt.Println("pageSize", pageSize)
+	log.Println("page", page)
+	log.Println("pageSize", pageSize)
 
 	users, count := model.ReadUserWithPaging(page, pageSize, userCode, userName)
-	fmt.Println(users)
-	fmt.Println(count)
+	log.Println(users)
+	log.Println(count)
 
 	RenderHTML(c, http.StatusOK, "user_index.tmpl", gin.H{
 		"_csrf":      csrf.GetToken(c),
@@ -48,7 +48,7 @@ func ShowUsers(c *gin.Context) {
 
 func GetUser(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	fmt.Println("id", id)
+	log.Println("id", id)
 	user := createIDUser(id)
 	user = user.Read().(model.User)
 	user.Password = ""
@@ -134,7 +134,7 @@ func checkDuplicateUserCode(sl validator.StructLevel) {
 		return
 	}
 	dbUser := model.GetUserFromCode(user.UserCode)
-	fmt.Println("dbUser", dbUser)
+	log.Println("dbUser", dbUser)
 
 	if dbUser.GetID() != 0 {
 		sl.ReportError(user.UserCode, "UserCode", "UserCode", "duplicateCode", "")

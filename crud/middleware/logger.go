@@ -11,7 +11,7 @@ import (
 func RecordUaAndTime(c *gin.Context) {
 	logger, err := zap.NewProduction()
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Panic(err.Error())
 	}
 	defer logger.Sync()
 	sugar := logger.Sugar()

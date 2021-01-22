@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -92,9 +93,9 @@ func readProduct(gdb *gorm.DB, orgCode, productName string) ([]Product, int) {
 		fmt.Sprintf("%%%s%%", productName)}
 
 	gdb.Find(&products, append(where, args...)...)
-	fmt.Println("products", products)
+	log.Println("products", products)
 	db.GetDB().Model(&Product{}).Where(where[0], args...).Count(&count)
 
-	fmt.Println(count)
+	log.Println(count)
 	return products, int(count)
 }

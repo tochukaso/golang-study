@@ -1,8 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"io"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-contrib/sessions"
@@ -10,11 +12,13 @@ import (
 	"github.com/gin-gonic/gin"
 	csrf "github.com/utrack/gin-csrf"
 	"omori.jp/controller"
+	"omori.jp/env"
 	"omori.jp/middleware"
 	"omori.jp/model"
 )
 
 func main() {
+	setLogger()
 	engine := gin.Default()
 	store := cookie.NewStore([]byte("secret"))
 	/** comment out Cookie options
@@ -115,9 +119,9 @@ func addMailController(engine *gin.Engine) {
 
 func sessionCheck(c *gin.Context) {
 	session := sessions.Default(c)
-	fmt.Println("session", session)
+	log.Println("session", session)
 	userID := session.Get("UserID")
-	fmt.Println("UserID", userID)
+	log.Println("UserID", userID)
 	if userID == nil {
 		c.Redirect(http.StatusTemporaryRedirect, "/login/")
 		c.Abort()
@@ -128,4 +132,15 @@ func sessionCheck(c *gin.Context) {
 		c.Set("UserName", user.UserName)
 		c.Next()
 	}
+}
+
+func setLogger() {
+	logFilePath := env.GetEnv().LogFilePath
+	f, _ := os.Create(logFilePath)
+
+	//gin.DefaultWriter = io.MultiWriter(f)
+	// Use the following code if you need to write the logs to file and console at the same time.
+	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+
+	log.SetOutput(f)
 }

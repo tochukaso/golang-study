@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -87,5 +87,5 @@ func countUp(c *gin.Context) {
 	}
 	session.Set("count", count)
 	session.Save()
-	fmt.Println("Count", count)
+	log.Println("Count", count)
 }
