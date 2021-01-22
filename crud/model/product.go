@@ -94,7 +94,7 @@ func readProduct(gdb *gorm.DB, orgCode, productName string) ([]Product, int) {
 
 	gdb.Find(&products, append(where, args...)...)
 	log.Println("products", products)
-	db.GetDB().Model(&Product{}).Where(where[0], args...).Count(&count)
+	GetDB().Model(&Product{}).Where(where[0], args...).Count(&count)
 
 	log.Println(count)
 	return products, int(count)

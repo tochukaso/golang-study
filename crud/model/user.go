@@ -80,7 +80,7 @@ func readUser(gdb *gorm.DB, code, name string) ([]User, int) {
 	args := []interface{}{fmt.Sprintf("%%%s%%", code),
 		fmt.Sprintf("%%%s%%", name)}
 
-	GetDB().Find(&users, append(where, args...)...)
+	gdb.Find(&users, append(where, args...)...)
 	log.Println("users", users)
 	GetDB().Model(&User{}).Where(where[0], args...).Count(&count)
 
