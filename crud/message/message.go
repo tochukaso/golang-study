@@ -23,7 +23,7 @@ func ConvertMessage(e validator.FieldError) string {
 		field = "ユーザー名"
 	case "UserCode":
 		field = "ユーザーコード"
-	case "Email":
+	case "Mail":
 		field = "メールアドレス"
 	case "Password":
 		field = "パスワード"

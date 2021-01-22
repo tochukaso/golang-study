@@ -6,6 +6,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<base href="{{.baseURL}}">
 	<title>Login Page</title>
    <!--Made with love by Mutiullah Samim -->
    
@@ -16,14 +17,14 @@
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
 	<!--Custom styles-->
-	<link rel="stylesheet" type="text/css" href="/static/css/login.css">
+	<link rel="stylesheet" type="text/css" href="static/css/login.css">
 
 </head>
 <body>
 <div class="container">
 	<div class="d-flex justify-content-center "style="margin-bottom:0px;">
     <div class="logo">
-        <img src="/static/assets/ECS3.png">
+        <img src="static/assets/ECS3.png">
     </div>
   </div>
 	<div class="d-flex justify-content-center h-100">
@@ -37,7 +38,7 @@
         </div>
       {{ end}}
 			<div class="card-body">
-				<form method="post" action="/login/">
+				<form method="post" action="login/">
 				  <input type="hidden" name="_csrf" value="{{._csrf}}">
 					<div class="input-group form-group">
 						<div class="input-group-prepend">

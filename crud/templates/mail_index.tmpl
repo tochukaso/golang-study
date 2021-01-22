@@ -1,8 +1,6 @@
 <html>
   <head>
-    <link rel="icon" href="/static/assets/favicon.ico">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    {{ template "head" .baseURL}}
   </head>
   <body class="bg-light">
       <div class="container">
@@ -35,7 +33,7 @@
                 {{ with .list }}
                   {{ range $i, $v := . }}
                   <tr>
-                    <th scope="row"><a href="/mail/detail/{{.code}}">{{.visibleCode}}</a></th>
+                    <th scope="row"><a href="mail/detail/{{.code}}">{{.visibleCode}}</a></th>
                     <td>{{ .name }}</td>
                     <td>
                     {{if (eq .updatedAt.IsZero false)}}

@@ -14,6 +14,7 @@ type Env struct {
 	SmtpPassword     string
 	LogFilePath      string
 	SQLLogLevel      string
+	BaseURL          string
 }
 
 func GetEnv() Env {
