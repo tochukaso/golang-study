@@ -72,7 +72,7 @@
             {{ with .P.ID }}
               <hr class="mb-4">
               <form method="post" action="/user/delete">
-              	<input type="hidden" name="_csrf" value="{{._csrf}}">
+              	<input type="hidden" name="_csrf" value="{{$._csrf}}">
                 <input type="hidden" name="id" value="{{.}}">
                 <button class="btn btn-danger btn-lg btn-block" type="submit">削除する</button>
               </form>
