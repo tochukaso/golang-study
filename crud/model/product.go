@@ -58,7 +58,7 @@ func (e Product) GetImagePath() string {
 	if e.ProductImage == "" {
 		return ""
 	}
-	return "/static/assets/product/" + strconv.Itoa(int(e.ID)) + "/" + e.ProductImage
+	return "static/assets/product/" + strconv.Itoa(int(e.ID)) + "/" + e.ProductImage
 }
 
 func GetProductFromId(id string) Product {

@@ -61,7 +61,7 @@
                   <label for="OrgCode">商品画像</label>
                   <input type="file" class="form-control" name="productImage" />
                   {{ with .P.GetImagePath}}
-                    <img src="{{ . }}" class="img-thumbnail" width="150px;">
+                    <img src="{{ . }}" class="img-thumbnail" width="150px;" onerror="this.src='static/assets/no-image.jpg';">
                   {{ end  }}
                   <input type="hidden" name="ProductImage" value="{{.P.ProductImage}}">
                 </div>

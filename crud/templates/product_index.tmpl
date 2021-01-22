@@ -71,7 +71,7 @@
                     <th scope="row"><a href="product/detail/{{.ID}}">{{.ID}}</a></th>
                     <td>
                     {{ with .GetImagePath}}
-                      <img src="{{ . }}" class="img-thumbnail" width="40px;">
+                      <img src="{{ . }}" class="img-thumbnail" width="40px;" onerror="this.src='static/assets/no-image.jpg';">
                     {{ end  }}
                     </td>
                     <td>{{ .ProductName }}</td>
