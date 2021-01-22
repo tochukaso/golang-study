@@ -15,6 +15,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/ugorji/go v1.2.3 // indirect
+	github.com/utrack/gin-csrf v0.0.0-20190424104817-40fb8d2c8fca
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
 	golang.org/x/sys v0.0.0-20210113181707-4bcb84eeeb78 // indirect

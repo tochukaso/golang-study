@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	csrf "github.com/utrack/gin-csrf"
 	"omori.jp/model"
 )
 
@@ -27,6 +28,7 @@ func UploadProduct(c *gin.Context) {
 	defer file.Close()
 	errors, i, updateCount := processCsv(file)
 	RenderHTML(c, http.StatusOK, "product_upload.tmpl", gin.H{
+		"_csrf":    csrf.GetToken(c),
 		"msg":      "取り込み処理を完了しました。",
 		"totalRow": strconv.Itoa(i),
 		"saveRow":  updateCount,

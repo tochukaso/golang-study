@@ -8,6 +8,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	csrf "github.com/utrack/gin-csrf"
 	"omori.jp/controller"
 	"omori.jp/middleware"
 	"omori.jp/model"
@@ -27,6 +28,14 @@ func main() {
 	})
 	**/
 	engine.Use(sessions.Sessions("mysession", store))
+	engine.Use(csrf.Middleware(csrf.Options{
+		Secret: "token",
+		ErrorFunc: func(c *gin.Context) {
+			controller.RenderHTML(c, http.StatusForbidden, "token_error.tmpl", gin.H{})
+			c.Abort()
+		},
+	}))
+
 	engine.Use(middleware.RecordUaAndTime)
 	engine.LoadHTMLGlob("templates/*.tmpl")
 

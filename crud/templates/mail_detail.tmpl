@@ -29,6 +29,7 @@
           <div class="col-md-12 order-md-1">
             <h4 class="mb-3">メールテンプレート情報</h4>
             <form method="post" action="/mail/" >
+            	<input type="hidden" name="_csrf" value="{{._csrf}}">
               {{ with .P.ID }}
                 <input type="hidden" name="ID" value="{{.}}">
               {{ end }}

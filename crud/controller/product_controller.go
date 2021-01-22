@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/gocarina/gocsv"
+	csrf "github.com/utrack/gin-csrf"
 	"omori.jp/csv"
 	"omori.jp/env"
 	"omori.jp/mail"
@@ -48,7 +49,8 @@ func GetProduct(c *gin.Context) {
 	fmt.Println(product)
 
 	RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
-		"P": product,
+		"_csrf": csrf.GetToken(c),
+		"P":     product,
 	})
 }
 
@@ -83,8 +85,9 @@ func PutProduct(c *gin.Context) {
 	}
 
 	RenderHTML(c, http.StatusOK, "product_detail.tmpl", gin.H{
-		"P":   product,
-		"msg": msg,
+		"_csrf": csrf.GetToken(c),
+		"P":     product,
+		"msg":   msg,
 	})
 
 }

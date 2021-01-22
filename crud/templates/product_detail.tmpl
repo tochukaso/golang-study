@@ -29,6 +29,7 @@
           <div class="col-md-12 order-md-1">
             <h4 class="mb-3">商品情報</h4>
             <form method="post" action="/product/" enctype="multipart/form-data">
+              <input type="hidden" name="_csrf" value="{{._csrf}}">
               {{ with .P.ID }}
               <div class="row">
                 <div class="col-md-9 mb-2">
@@ -81,6 +82,7 @@
             {{ with .P.ID }}
               <hr class="mb-4">
               <form method="post" action="/product/delete">
+                <input type="hidden" name="_csrf" value="{{._csrf}}">
                 <input type="hidden" name="id" value="{{.}}">
                 <button class="btn btn-danger btn-lg btn-block" type="submit">削除する</button>
               </form>

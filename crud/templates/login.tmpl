@@ -38,11 +38,12 @@
       {{ end}}
 			<div class="card-body">
 				<form method="post" action="/login/">
+				  <input type="hidden" name="_csrf" value="{{._csrf}}">
 					<div class="input-group form-group">
 						<div class="input-group-prepend">
 							<span class="input-group-text"><i class="fas fa-user"></i></span>
 						</div>
-						<input type="text" name="userCode" class="form-control" placeholder="userCode">
+						<input type="text" name="userCode" class="form-control" placeholder="userCode" value="{{.userCode}}">
 						
 					</div>
 					<div class="input-group form-group">

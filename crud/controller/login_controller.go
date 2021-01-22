@@ -13,8 +13,7 @@ import (
 
 func ShowLogin(c *gin.Context) {
 	countUp(c)
-	c.HTML(http.StatusOK, "login.tmpl", gin.H{})
-
+	RenderHTML(c, http.StatusOK, "login.tmpl", gin.H{})
 }
 
 func AttemptLogin(c *gin.Context) {
@@ -28,7 +27,7 @@ func AttemptLogin(c *gin.Context) {
 		products, count := model.ReadProduct("", "")
 		page := 1
 		pageSize := 10
-		c.HTML(http.StatusOK, "product_index.tmpl", gin.H{
+		RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
 			"products":   products,
 			"count":      count,
 			"page":       page,
@@ -36,8 +35,9 @@ func AttemptLogin(c *gin.Context) {
 			"pagination": pagination.Pagination(count, page, pageSize),
 		})
 	} else {
-		c.HTML(http.StatusOK, "login.tmpl", gin.H{
-			"errMsg": "ユーザーコードとパスワードの組み合わせが一致しません。",
+		RenderHTML(c, http.StatusOK, "login.tmpl", gin.H{
+			"userCode": userCode,
+			"errMsg":   "ユーザーコードとパスワードの組み合わせが一致しません。",
 		})
 	}
 
@@ -48,7 +48,7 @@ func Logout(c *gin.Context) {
 	session.Set("UserID", "")
 	session.Clear()
 	session.Save()
-	c.HTML(http.StatusOK, "login.tmpl", gin.H{
+	RenderHTML(c, http.StatusOK, "login.tmpl", gin.H{
 		"errMsg": "ログアウトしました",
 	})
 
