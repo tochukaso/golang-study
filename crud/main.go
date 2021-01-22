@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -14,7 +13,6 @@ import (
 	"omori.jp/controller"
 	"omori.jp/env"
 	"omori.jp/middleware"
-	"omori.jp/model"
 )
 
 func main() {
@@ -71,7 +69,7 @@ func addLoginController(engine *gin.Engine) {
 func addProductController(engine *gin.Engine) {
 	controller.InitProduct()
 	group := engine.Group("/product")
-	group.Use(sessionCheck)
+	group.Use(controller.SessionCheck)
 	group.GET("/", controller.ShowProducts)
 	group.GET("/detail/:id", controller.GetProduct)
 	group.GET("/download", controller.DownloadProduct)
@@ -86,7 +84,7 @@ func addProductController(engine *gin.Engine) {
 func addProductUploadController(engine *gin.Engine) {
 	controller.InitProduct()
 	group := engine.Group("/product")
-	group.Use(sessionCheck)
+	group.Use(controller.SessionCheck)
 	group.GET("/upload", func(c *gin.Context) {
 		controller.RenderHTML(c, http.StatusOK, "product_upload.tmpl", gin.H{})
 	})
@@ -96,7 +94,7 @@ func addProductUploadController(engine *gin.Engine) {
 func addUserController(engine *gin.Engine) {
 	controller.InitUser()
 	group := engine.Group("/user")
-	group.Use(sessionCheck)
+	group.Use(controller.SessionCheck)
 	group.GET("/", controller.ShowUsers)
 	group.GET("/detail/:id", controller.GetUser)
 
@@ -110,28 +108,11 @@ func addUserController(engine *gin.Engine) {
 func addMailController(engine *gin.Engine) {
 	controller.InitMailTemplate()
 	group := engine.Group("/mail")
-	group.Use(sessionCheck)
+	group.Use(controller.SessionCheck)
 	group.GET("/", controller.ShowMailTemplates)
 	group.GET("/detail/:code", controller.GetMailTemplate)
 
 	group.POST("/", controller.PutMailTemplate)
-}
-
-func sessionCheck(c *gin.Context) {
-	session := sessions.Default(c)
-	log.Println("session", session)
-	userID := session.Get("UserID")
-	log.Println("UserID", userID)
-	if userID == nil {
-		c.Redirect(http.StatusTemporaryRedirect, "/login/")
-		c.Abort()
-	} else {
-		user := model.GetUserFromId(strconv.Itoa(userID.(int)))
-		c.Set("UserID", userID)
-		c.Set("UserCode", user.UserCode)
-		c.Set("UserName", user.UserName)
-		c.Next()
-	}
 }
 
 func setLogger() {

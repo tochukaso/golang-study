@@ -7,6 +7,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	GuestLoginID = "guest"
+)
+
 type User struct {
 	gorm.Model
 	UserCode string `form:"UserCode" binding:"required" validate:"required,ascii" gorm:"unique;not null"`

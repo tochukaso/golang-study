@@ -3,6 +3,7 @@ package controller
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -19,18 +20,26 @@ func AttemptLogin(c *gin.Context) {
 	countUp(c)
 	userCode := c.PostForm("userCode")
 	password := c.PostForm("password")
-	dbUser := model.GetUserFromCode(userCode)
+	isGuest := c.PostForm("isGuest")
 
-	if bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(password)) == nil {
-		saveLoginInfo(c, dbUser)
+	if isGuest == "true" {
+		saveGuestLoginInfo(c)
 		renderDefaultProductIndexView(c, "")
 	} else {
-		RenderHTML(c, http.StatusOK, "login.tmpl", gin.H{
-			"userCode": userCode,
-			"errMsg":   "ユーザーコードとパスワードの組み合わせが一致しません。",
-		})
-	}
 
+		dbUser := model.GetUserFromCode(userCode)
+
+		if bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(password)) == nil {
+			saveLoginInfo(c, dbUser)
+			renderDefaultProductIndexView(c, "")
+		} else {
+			RenderHTML(c, http.StatusOK, "login.tmpl", gin.H{
+				"userCode": userCode,
+				"errMsg":   "ユーザーコードとパスワードの組み合わせが一致しません。",
+			})
+		}
+
+	}
 }
 
 func Logout(c *gin.Context) {
@@ -63,6 +72,14 @@ func saveLoginInfo(c *gin.Context, user model.User) {
 	session := sessions.Default(c)
 	session.Set("UserID", int(user.ID))
 	session.Save()
+	SessionCheck(c)
+}
+
+func saveGuestLoginInfo(c *gin.Context) {
+	session := sessions.Default(c)
+	session.Set("UserID", model.GuestLoginID)
+	session.Save()
+	SessionCheck(c)
 }
 
 func countUp(c *gin.Context) {
@@ -78,4 +95,26 @@ func countUp(c *gin.Context) {
 	session.Set("count", count)
 	session.Save()
 	log.Println("Count", count)
+}
+
+func SessionCheck(c *gin.Context) {
+	session := sessions.Default(c)
+	log.Println("session", session)
+	userID := session.Get("UserID")
+	log.Println("UserID", userID)
+	if userID == nil {
+		c.Redirect(http.StatusTemporaryRedirect, "/login/")
+		c.Abort()
+	} else if userID == model.GuestLoginID {
+		c.Set("UserID", model.GuestLoginID)
+		c.Set("UserCode", model.GuestLoginID)
+		c.Set("UserName", "ゲスト")
+		c.Next()
+	} else {
+		user := model.GetUserFromId(strconv.Itoa(userID.(int)))
+		c.Set("UserID", userID)
+		c.Set("UserCode", user.UserCode)
+		c.Set("UserName", user.UserName)
+		c.Next()
+	}
 }
