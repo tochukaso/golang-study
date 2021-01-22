@@ -18,18 +18,7 @@ import (
 func main() {
 	setLogger()
 	engine := gin.Default()
-	store := cookie.NewStore([]byte("secret"))
-	/** comment out Cookie options
-	store.Options(sessions.Options{
-		"",
-		"",
-		0,
-		false,
-		true,
-		http.SameSiteStrictMode,
-	})
-	**/
-	engine.Use(sessions.Sessions("mysession", store))
+	setCookiePolicy(engine)
 	engine.Use(csrf.Middleware(csrf.Options{
 		Secret: "token",
 		ErrorFunc: func(c *gin.Context) {
@@ -124,4 +113,10 @@ func setLogger() {
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 
 	log.SetOutput(f)
+}
+
+func setCookiePolicy(engine *gin.Engine) {
+	store := cookie.NewStore([]byte("secret"))
+	store.Options(controller.MakeSessionOption())
+	engine.Use(sessions.Sessions("sid", store))
 }

@@ -2,6 +2,7 @@ package env
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/kelseyhightower/envconfig"
 )
@@ -15,6 +16,8 @@ type Env struct {
 	LogFilePath      string
 	SQLLogLevel      string
 	BaseURL          string
+	CookieSSL        string
+	CookieSameSite   string
 }
 
 func GetEnv() Env {
@@ -24,4 +27,12 @@ func GetEnv() Env {
 		log.Fatal(err.Error())
 	}
 	return s
+}
+
+func GetCookieSSL() bool {
+	b, err := strconv.ParseBool(GetEnv().CookieSSL)
+	if err != nil {
+		return false
+	}
+	return b
 }

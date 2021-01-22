@@ -8,16 +8,15 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"omori.jp/env"
 	"omori.jp/model"
 )
 
 func ShowLogin(c *gin.Context) {
-	countUp(c)
 	RenderHTML(c, http.StatusOK, "login.tmpl", gin.H{})
 }
 
 func AttemptLogin(c *gin.Context) {
-	countUp(c)
 	userCode := c.PostForm("userCode")
 	password := c.PostForm("password")
 	isGuest := c.PostForm("isGuest")
@@ -44,6 +43,7 @@ func AttemptLogin(c *gin.Context) {
 
 func Logout(c *gin.Context) {
 	session := sessions.Default(c)
+	setSessionOption(session)
 	session.Set("UserID", "")
 	session.Clear()
 	session.Save()
@@ -70,6 +70,7 @@ func saveLoginInfo(c *gin.Context, user model.User) {
 	**/
 
 	session := sessions.Default(c)
+	setSessionOption(session)
 	session.Set("UserID", int(user.ID))
 	session.Save()
 	SessionCheck(c)
@@ -77,24 +78,24 @@ func saveLoginInfo(c *gin.Context, user model.User) {
 
 func saveGuestLoginInfo(c *gin.Context) {
 	session := sessions.Default(c)
+	setSessionOption(session)
 	session.Set("UserID", model.GuestLoginID)
 	session.Save()
 	SessionCheck(c)
 }
 
-func countUp(c *gin.Context) {
-	session := sessions.Default(c)
-	var count int
-	v := session.Get("count")
-	if v == nil {
-		count = 0
-	} else {
-		count = v.(int)
-		count++
+func setSessionOption(session sessions.Session) {
+	session.Options(MakeSessionOption())
+}
+
+func MakeSessionOption() sessions.Options {
+	return sessions.Options{
+		Path:     "/",
+		MaxAge:   0,
+		HttpOnly: true,
+		SameSite: env.GetSameSitePolicy(),
+		Secure:   env.GetCookieSSL(),
 	}
-	session.Set("count", count)
-	session.Save()
-	log.Println("Count", count)
 }
 
 func SessionCheck(c *gin.Context) {
