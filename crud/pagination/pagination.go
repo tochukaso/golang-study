@@ -37,19 +37,19 @@ func (p Paginavi) Navigation() template.HTML {
 	if p.Page >= totalPage {
 		lastDisabled = "btn disabled"
 	}
-	tag += fmt.Sprintf("<li class='page-item'><a class='page-link %s' href='#' onclick=\"$('#page').val('%d');$('#searchForm').submit();\">Previous</a></li>", firstDisabled, max(1, p.Page-1))
+	tag += fmt.Sprintf("<li class='page-item'><button class='page-link %s' onclick=\"$('#page').val('%d');$('#searchForm').submit();\">Previous</button></li>", firstDisabled, max(1, p.Page-1))
 	if firstDisabled == "" {
 		bef := p.Page - 1
-		tag += fmt.Sprintf("<li class='page-item'><a class='page-link' href='#' onclick=\"$('#page').val('%d');$('#searchForm').submit();\">%d</a></li>", bef, bef)
+		tag += fmt.Sprintf("<li class='page-item'><button class='page-link' onclick=\"$('#page').val('%d');$('#searchForm').submit();\">%d</button></li>", bef, bef)
 	}
-	tag += fmt.Sprintf("<li class='page-item active'><a class='page-link'>%d</a></li>", p.Page)
+	tag += fmt.Sprintf("<li class='page-item active'><button class='page-link'>%d</button></li>", p.Page)
 
 	if lastDisabled == "" {
 		af := p.Page + 1
-		tag += fmt.Sprintf("<li class='page-item'><a class='page-link' href='#' onclick=\"$('#page').val('%d');$('#searchForm').submit();\">%d</a></li>", af, af)
+		tag += fmt.Sprintf("<li class='page-item'><button class='page-link' onclick=\"$('#page').val('%d');$('#searchForm').submit();\">%d</button></li>", af, af)
 	}
 
-	tag += fmt.Sprintf("<li class='page-item'><a class='page-link %s' href='#' onclick=\"$('#page').val('%d');$('#searchForm').submit();\">Next</a></li>", lastDisabled, min(totalPage, p.Page+1))
+	tag += fmt.Sprintf("<li class='page-item'><button class='page-link %s' onclick=\"$('#page').val('%d');$('#searchForm').submit();\">Next</button></li>", lastDisabled, min(totalPage, p.Page+1))
 	tag += "</ul>"
 
 	return template.HTML(tag)
