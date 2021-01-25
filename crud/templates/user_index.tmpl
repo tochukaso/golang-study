@@ -1,0 +1,85 @@
+<html>
+  <head>
+    {{ template "head" .baseURL}}
+  </head>
+  <body class="bg-light">
+      <div class="container">
+        {{ template "header" .sUserName}}
+        <div class="py-5 text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-box" viewBox="0 0 16 16" style="margin-bottom:24px;">
+            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+          </svg>
+          <h2>ユーザー一覧画面</h2>
+          <p class="lead">登録済みのユーザー一覧を表示するためのサンプル画面</p>
+        </div>
+        {{ with .msg }}
+          <div class="alert alert-success" role="alert">
+            <strong>{{.}}</strong>
+          </div>
+        {{ end}}
+  
+        <div class="row">
+          <div class="col-md-12 order-md-1">
+            <h4 class="mb-3">ユーザー情報</h4>
+            <form method="get" action="user/" id="searchForm">
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <label for="userName">ユーザー名</label>
+                  <input type="text" class="form-control" name="userName" id="userName" placeholder="" value="{{.userName}}" >
+                </div>
+                <div class="col-md-6 mb-4">
+                  <label for="UserCode">ユーザーコード</label>
+                  <input type="text" class="form-control" name="userCode" id="userCode" placeholder="" value="{{.userCode}}" >
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-1 mb-4">
+                  <label for="name">表示件数</label>
+            			<select name="pageSize" class="form-select">
+					            <option value="10" {{if eq .pageSize 10}}selected{{end}}>10</option>
+					            <option value="20" {{if eq .pageSize 20}}selected{{end}}>20</option>
+					            <option value="50" {{if eq .pageSize 50}}selected{{end}}>50</option>
+					            <option value="100" {{if eq .pageSize 100}}selected{{end}}>100</option>
+				          </select>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-lg btn-block" type="submit">検索する</button>
+              <button class="btn btn-primary btn-lg btn-block" type="button" onclick='location.href="user/new"'>登録する</button>
+              <hr class="mb-3">
+              <nav aria-label="Page navigation example">
+                <div class="states">{{.pagination.CountExplanation}}</div>
+                {{.pagination.Navigation}}
+              </nav>
+              <input type="hidden" name="page" id="page" value="{{ .page }}">
+            </form>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">ユーザー名</th>
+                  <th scope="col">ユーザーコード</th>
+                  <th scope="col">最終更新日時</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{ with .users }}
+                  {{ range $i, $v := . }}
+                  <tr>
+                    <th scope="row"><a href="user/detail/{{.ID}}">{{.ID}}</a></th>
+                    <td>{{ .UserName }}</td>
+                    <td>{{ .UserCode }}</td>
+                    <td>{{ .UpdatedAt }}</td>
+                  </tr>
+                  {{ end }}
+                {{ end }}
+              </tbody>
+            </table>
+          </div>
+        </div>
+  
+      </div>
+  
+  
+  </body>
+
+</html>

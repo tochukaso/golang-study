@@ -1,0 +1,87 @@
+<html>
+  <head>
+  	{{ template "head" .baseURL}}
+  </head>
+  <body class="bg-light">
+      <div class="container">
+        {{ template "header" .sUserName}}
+        <div class="py-5 text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" fill="currentColor" class="bi bi-box" viewBox="0 0 16 16" style="margin-bottom:24px;">
+            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+          </svg>
+          <h2>ユーザー設定画面</h2>
+          <p class="lead">ユーザー情報を設定するためのサンプル画面</p>
+        </div>
+
+        {{ with .msg }}
+          <div class="alert alert-success" role="alert">
+            <strong>{{.}}</strong>
+          </div>
+        {{ end}}
+        {{ with .errMsg }}
+          <div class="alert alert-danger" role="alert">
+            <strong>{{.}}</strong>
+          </div>
+        {{ end}}
+  
+        <div class="row">
+          <div class="col-md-12 order-md-1">
+            <h4 class="mb-3">ユーザー情報</h4>
+            <form method="post" action="user/">
+            	<input type="hidden" name="_csrf" value="{{._csrf}}">
+              {{ with .P.ID }}
+              <div class="row">
+                <div class="col-md-9 mb-2">
+                  <label>ID&nbsp;:&nbsp;{{.}}</label>
+                </div>
+              </div>
+                <input type="hidden" name="ID" value="{{.}}">
+              {{ end }}
+              <div class="row">
+                <div class="col-md-9 mb-4">
+                  <label for="name">ユーザー名</label>
+                  <input type="text" class="form-control" name="UserName" id="UserName" placeholder="" value="{{.P.UserName}}" >
+                </div>
+              </div>
+  
+              <div class="row">
+                <div class="col-md-9 mb-4">
+                  <label for="UserCode">ユーザーコード</label>
+                  <input type="text" class="form-control" name="UserCode" id="UserCode" placeholder="" value="{{.P.UserCode}}">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-9 mb-4">
+                  <label for="Password">パスワード</label>
+                  <input type="text" class="form-control" name="Password" id="Password" placeholder="" value="{{.P.Password}}" >
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-9 mb-4">
+                  <label for="Mail">メールアドレス</label>
+                  <input type="text" class="form-control" name="Mail"  placeholder="aaa@example.com" value="{{.P.Mail}}" >
+                </div>
+              </div>
+              <hr class="mb-4">
+              <button class="btn btn-primary btn-lg btn-block" type="submit">保存する</button>
+
+              <button class="btn btn-primary btn-lg btn-block" type="button" onclick='location.href="user/"'>一覧に戻る</button>
+            </form>
+
+            {{ with .P.ID }}
+              <hr class="mb-4">
+              <form method="post" action="user/delete">
+              	<input type="hidden" name="_csrf" value="{{$._csrf}}">
+                <input type="hidden" name="id" value="{{.}}">
+                <button class="btn btn-danger btn-lg btn-block" type="submit">削除する</button>
+              </form>
+            {{ end }}
+          </div>
+        </div>
+  
+      </div>
+  
+  
+  </body>
+
+</html>
