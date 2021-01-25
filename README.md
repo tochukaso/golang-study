@@ -103,3 +103,4 @@ DBへのデータの更新は以下のように構造体を指定して保存す
 	return readProduct(db, orgCode, productName)
 ```
 
+
