@@ -37,6 +37,14 @@ func ShowProducts(c *gin.Context) {
 	renderProductIndexView(c, extractProductSearchQuery(c), "")
 }
 
+func ShowProductsJSON(c *gin.Context) {
+	products, count := searchProduct(extractProductSearchQuery(c))
+	ResponseJSON(c, http.StatusOK, map[string]interface{}{
+		"count":    count,
+		"products": products,
+	})
+}
+
 func GetProduct(c *gin.Context) {
 	id := c.Param("id")
 	log.Println("id", id)
@@ -144,7 +152,7 @@ func checkDuplicateOrgCode(sl validator.StructLevel) {
 func convertProduct(products []model.Product) []csv.ProductCSV {
 	var result []csv.ProductCSV
 	for i, p := range products {
-		result = append(result, csv.ProductCSV{p.ID, p.ProductName, p.OrgCode, p.JanCode, p.ProductDetail, p.CreatedAt, p.UpdatedAt})
+		result = append(result, csv.ConvertProductCSV(p))
 		log.Println("r", result[i])
 	}
 	return result
@@ -190,14 +198,17 @@ func saveProduct(product model.Product) (string, error) {
 	return msg, err
 }
 
-func renderProductIndexView(c *gin.Context, query productSearchQuery, msg string) {
-	products, count := model.ReadProductWithPaging(
+func searchProduct(query productSearchQuery) ([]model.Product, int) {
+	return model.ReadProductWithPaging(
 		query.page,
 		query.pageSize,
 		query.orgCode,
 		query.productName,
 	)
+}
 
+func renderProductIndexView(c *gin.Context, query productSearchQuery, msg string) {
+	products, count := searchProduct(query)
 	RenderHTML(c, http.StatusOK, "product_index.tmpl", gin.H{
 		"msg":         msg,
 		"productName": query.productName,

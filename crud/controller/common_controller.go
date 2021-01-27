@@ -17,3 +17,9 @@ func RenderHTML(c *gin.Context, status int, page string, params map[string]inter
 	log.Println("params", params)
 	c.HTML(status, page, params)
 }
+
+func ResponseJSON(c *gin.Context, status int, params map[string]interface{}) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers")
+	c.JSON(status, params)
+}

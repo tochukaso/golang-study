@@ -68,6 +68,9 @@ func addProductController(engine *gin.Engine) {
 	})
 	group.POST("/", controller.PutProduct)
 	group.POST("/delete", controller.DeleteProduct)
+
+	apiGroup := engine.Group("/api/product")
+	apiGroup.GET("/", controller.ShowProductsJSON)
 }
 
 func addProductUploadController(engine *gin.Engine) {
