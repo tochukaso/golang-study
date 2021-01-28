@@ -41,7 +41,7 @@ func ShowProductsJSON(c *gin.Context) {
 	products, count := searchProduct(extractProductSearchQuery(c))
 	ResponseJSON(c, http.StatusOK, map[string]interface{}{
 		"count":    count,
-		"products": products,
+		"products": convertProductsJSON(products),
 	})
 }
 
@@ -237,5 +237,22 @@ func extractProductSearchQuery(c *gin.Context) productSearchQuery {
 		c.Query("orgCode"),
 		page,
 		pageSize,
+	}
+}
+
+func convertProductsJSON(products []model.Product) []model.ProductJSON {
+	var result []model.ProductJSON
+
+	for _, p := range products {
+		result = append(result, convertProductJSON(p))
+	}
+
+	return result
+}
+
+func convertProductJSON(p model.Product) model.ProductJSON {
+	return model.ProductJSON{
+		p,
+		p.GetAbsoluteImagePath(),
 	}
 }

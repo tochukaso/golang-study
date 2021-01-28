@@ -8,6 +8,7 @@ import (
 
 	"gorm.io/gorm"
 	"omori.jp/db"
+	"omori.jp/env"
 )
 
 type Product struct {
@@ -23,6 +24,11 @@ type Product struct {
 	Rating        int            `form:"Rating" json:"ratings"`
 	Review        int            `form:"Review" json:"reviews"`
 	ProductImage  string         `form:"ProductImage" json:"image"`
+}
+
+type ProductJSON struct {
+	Product
+	ProductImagePath string `json:"imagePath"`
 }
 
 func InitProduct() {
@@ -59,6 +65,13 @@ func (e Product) GetFromCode() Entity {
 	var user Product
 	GetDB().Find(&user, "org_code = ?", e.OrgCode)
 	return user
+}
+
+func (e Product) GetAbsoluteImagePath() string {
+	if e.ProductImage == "" {
+		return ""
+	}
+	return env.GetEnv().BaseURL + e.GetImagePath()
 }
 
 func (e Product) GetImagePath() string {
