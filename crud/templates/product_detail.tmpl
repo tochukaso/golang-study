@@ -72,6 +72,24 @@
                   <textarea class="form-control" name="ProductDetail" id="ProductDetail" placeholder="" rows="4" cols="50">{{.P.ProductDetail}}</textarea>
                 </div>
               </div>
+              <div class="row">
+                <div class="col-md-9 mb-4">
+                  <label for="OrgCode">商品価格</label>
+                  <input type="text" class="form-control" name="ProductPrice" id="ProductPrice" placeholder="" value="{{.P.ProductPrice}}" >
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-9 mb-4">
+                  <label for="Rating">レーティング</label>
+                  <input type="number" class="form-control" name="Rating" id="Rating" placeholder="" value="{{.P.Rating}}" >
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-9 mb-4">
+                  <label for="Review">レビュー件数</label>
+                  <input type="number" class="form-control" name="Review" id="Review" placeholder="" value="{{.P.Review}}" >
+                </div>
+              </div>
               <hr class="mb-4">
               <button class="btn btn-primary btn-lg btn-block" type="submit">保存する</button>
 

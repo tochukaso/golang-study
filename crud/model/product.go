@@ -4,18 +4,31 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"gorm.io/gorm"
 	"omori.jp/db"
+	"omori.jp/env"
 )
 
 type Product struct {
-	gorm.Model
-	ProductName   string `form:"ProductName" validate:"required" gorm:"not null`
-	OrgCode       string `form:"OrgCode" validate:"required,ascii" gorm:"unique;not null"`
-	JanCode       string `form:"JanCode" validate:"ascii"`
-	ProductDetail string `form:"ProductDetail"`
-	ProductImage  string `form:"ProductImage"`
+	ID            uint `gorm:"primaryKey" json:"id"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt `gorm:"index"`
+	ProductName   string         `form:"ProductName" validate:"required" gorm:"not null" json:"title"`
+	OrgCode       string         `form:"OrgCode" validate:"required,ascii" gorm:"unique;not null" `
+	JanCode       string         `form:"JanCode" validate:"ascii"`
+	ProductDetail string         `form:"ProductDetail" json:"description"`
+	ProductPrice  int            `form:"ProductPrice" json:"price"`
+	Rating        int            `form:"Rating" json:"ratings"`
+	Review        int            `form:"Review" json:"reviews"`
+	ProductImage  string         `form:"ProductImage" json:"image"`
+}
+
+type ProductJSON struct {
+	Product
+	ProductImagePath string `json:"imagePath"`
 }
 
 func InitProduct() {
@@ -52,6 +65,13 @@ func (e Product) GetFromCode() Entity {
 	var user Product
 	GetDB().Find(&user, "org_code = ?", e.OrgCode)
 	return user
+}
+
+func (e Product) GetAbsoluteImagePath() string {
+	if e.ProductImage == "" {
+		return ""
+	}
+	return env.GetEnv().BaseURL + e.GetImagePath()
 }
 
 func (e Product) GetImagePath() string {

@@ -19,6 +19,12 @@ func ConvertMessage(e validator.FieldError) string {
 		field = "Janコード"
 	case "ProductDetail":
 		field = "商品詳細"
+	case "ProductPrice":
+		field = "商品価格"
+	case "Rating":
+		field = "レーティン"
+	case "Review":
+		field = "レビュー件数"
 	case "UserName":
 		field = "ユーザー名"
 	case "UserCode":
