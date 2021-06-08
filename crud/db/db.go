@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -12,7 +13,6 @@ import (
 )
 
 func GetDB() *gorm.DB {
-	dsn := "gostudy:gostudy@/gostudy?parseTime=true"
 
 	logFilePath := env.GetEnv().LogFilePath
 	f, _ := os.Create(logFilePath)
@@ -26,9 +26,14 @@ func GetDB() *gorm.DB {
 		},
 	)
 
-	db, _ := gorm.Open(mysql.Open(dsn), &gorm.Config{
+	db, err := gorm.Open(mysql.Open(env.GetEnv().DSN), &gorm.Config{
 		Logger: newLogger,
 	})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	log.SetOutput(f)
 	return db
 }
