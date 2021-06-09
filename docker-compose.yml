@@ -17,9 +17,8 @@ services:
             - ./crud:/crud
         working_dir: /crud
         command:  bash -c "go mod download && go run main.go"
-#        tty: true
         environment:
-            - GOLANGSTUDY_PRODUCTIMAGEPATH=/tmp/
+            - GOLANGSTUDY_PRODUCTIMAGEPATH=/crud/static/assets/product
             - GOLANGSTUDY_LOGFILEPATH=./log/app.log
             - GOLANGSTUDY_SQLLOGLEVEL=Info
             - GOLANGSTUDY_COOKIESSL=false

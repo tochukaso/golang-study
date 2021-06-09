@@ -1,0 +1,27 @@
+
+# Date型は標準のScalarには未登録
+# scalar Dateで宣言して、リゾルバーを実装することで解決できる模様
+# まずはStringで宣言する
+type Product {
+  id: ID!
+  createdAt: String
+  updatedAt: String
+  deletedAt: String
+  productName: String!
+  orgCode: String!
+  janCode: String
+  productDetail: String
+  productPrice: Int
+  Rating: Int
+  Review: Int
+  productImage: String
+}
+
+type Mutation {
+  createProduct(input: Product!): Product!
+}
+
+type Query {
+  listProducts: [Products!]!
+  getProduct(id: ID!): Product!
+}
