@@ -1,8 +1,8 @@
 package model
 
 import (
+	"github.com/tochukaso/golang-study/db"
 	"gorm.io/gorm"
-	"omori.jp/db"
 )
 
 // Entity が兼ね備えるべきCRUDのメソッドを定義する。

@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/tochukaso/golang-study/db"
+	"github.com/tochukaso/golang-study/env"
 	"gorm.io/gorm"
-	"omori.jp/db"
-	"omori.jp/env"
 )
 
 type Product struct {

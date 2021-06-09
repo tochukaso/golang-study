@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tochukaso/golang-study/env"
 	csrf "github.com/utrack/gin-csrf"
-	"omori.jp/env"
 )
 
 func RenderHTML(c *gin.Context, status int, page string, params map[string]interface{}) {

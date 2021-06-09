@@ -8,8 +8,8 @@ import (
 	"strings"
 	"text/template"
 
-	"omori.jp/env"
-	"omori.jp/model"
+	"github.com/tochukaso/golang-study/env"
+	"github.com/tochukaso/golang-study/model"
 )
 
 func SendMail(from string, to []string, subject, mailTemplate string, variables interface{}) error {

@@ -9,10 +9,10 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/tochukaso/golang-study/controller"
+	"github.com/tochukaso/golang-study/env"
+	"github.com/tochukaso/golang-study/middleware"
 	csrf "github.com/utrack/gin-csrf"
-	"omori.jp/controller"
-	"omori.jp/env"
-	"omori.jp/middleware"
 )
 
 func main() {

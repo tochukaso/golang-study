@@ -7,9 +7,9 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/tochukaso/golang-study/env"
+	"github.com/tochukaso/golang-study/model"
 	"golang.org/x/crypto/bcrypt"
-	"omori.jp/env"
-	"omori.jp/model"
 )
 
 func ShowLogin(c *gin.Context) {

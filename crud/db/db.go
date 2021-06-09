@@ -6,10 +6,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/tochukaso/golang-study/env"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"omori.jp/env"
 )
 
 func GetDB() *gorm.DB {

@@ -1,7 +1,7 @@
-
 # Date型は標準のScalarには未登録
 # scalar Dateで宣言して、リゾルバーを実装することで解決できる模様
 # まずはStringで宣言する
+
 type Product {
   id: ID!
   createdAt: String
@@ -17,11 +17,22 @@ type Product {
   productImage: String
 }
 
+input NewProduct {
+  productName: String!
+  orgCode: String!
+  janCode: String
+  productDetail: String
+  productPrice: Int
+  Rating: Int
+  Review: Int
+  productImage: String
+}
+
 type Mutation {
-  createProduct(input: Product!): Product!
+  createProduct(input: NewProduct!): Product!
 }
 
 type Query {
-  listProducts: [Products!]!
+  listProducts: [Product!]!
   getProduct(id: ID!): Product!
 }

@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/gocarina/gocsv"
-	"omori.jp/csv"
-	"omori.jp/env"
-	"omori.jp/mail"
-	"omori.jp/message"
-	"omori.jp/model"
-	"omori.jp/pagination"
+	"github.com/tochukaso/golang-study/csv"
+	"github.com/tochukaso/golang-study/env"
+	"github.com/tochukaso/golang-study/mail"
+	"github.com/tochukaso/golang-study/message"
+	"github.com/tochukaso/golang-study/model"
+	"github.com/tochukaso/golang-study/pagination"
 )
 
 type productSearchQuery struct {
