@@ -6,16 +6,21 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/tochukaso/golang-study/controller"
 	"github.com/tochukaso/golang-study/env"
+	"github.com/tochukaso/golang-study/graph"
+	"github.com/tochukaso/golang-study/graph/generated"
 	"github.com/tochukaso/golang-study/middleware"
 	csrf "github.com/utrack/gin-csrf"
 )
 
 func main() {
+	go runGraphQL()
 	setLogger()
 	engine := gin.Default()
 	setCookiePolicy(engine)
@@ -34,6 +39,20 @@ func main() {
 
 	loadTemplates(engine)
 	engine.Run(":8081")
+
+}
+
+func runGraphQL() {
+	port := "8082"
+
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
+
 }
 
 func loadTemplates(engine *gin.Engine) {
@@ -46,6 +65,7 @@ func addControllers(engine *gin.Engine) {
 	addProductUploadController(engine)
 	addUserController(engine)
 	addMailController(engine)
+	addGraphQL(engine)
 }
 
 func addLoginController(engine *gin.Engine) {
@@ -105,6 +125,31 @@ func addMailController(engine *gin.Engine) {
 	group.GET("/detail/:code", controller.GetMailTemplate)
 
 	group.POST("/", controller.PutMailTemplate)
+}
+
+func addGraphQL(engine *gin.Engine) {
+	engine.POST("/gq/query", graphqlHandler())
+	engine.GET("/gq/", playgroundHandler())
+}
+
+// Defining the Graphql handler
+func graphqlHandler() gin.HandlerFunc {
+	// NewExecutableSchema and Config are in the generated.go file
+	// Resolver is in the resolver.go file
+	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+// Defining the Playground handler
+func playgroundHandler() gin.HandlerFunc {
+	h := playground.Handler("GraphQL", "/gq/query")
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
 }
 
 func setLogger() {

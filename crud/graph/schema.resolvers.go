@@ -6,13 +6,35 @@ package graph
 import (
 	"context"
 	"fmt"
+	"log"
+	"strconv"
 
 	"github.com/tochukaso/golang-study/graph/generated"
-	"github.com/tochukaso/golang-study/graph/model"
+	"github.com/tochukaso/golang-study/model"
 )
 
 func (r *mutationResolver) CreateProduct(ctx context.Context, input model.NewProduct) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented"))
+	product := &model.Product{
+		ProductName: input.ProductName,
+		OrgCode:     input.OrgCode,
+		/**
+		JanCode:       *input.JanCode,
+		ProductDetail: *input.ProductDetail,
+		ProductPrice:  *input.ProductPrice,
+		Rating:        *input.Rating,
+		Review:        *input.Review,
+		ProductImage:  *input.ProductImage,
+		**/
+	}
+
+	if err := product.Create(); err != nil {
+		log.Print("商品の登録に失敗しました")
+	} else {
+		log.Print("商品を登録しました")
+	}
+
+	r.products = append(r.products, product)
+	return product, nil
 }
 
 func (r *productResolver) ID(ctx context.Context, obj *model.Product) (string, error) {
@@ -32,11 +54,20 @@ func (r *productResolver) DeletedAt(ctx context.Context, obj *model.Product) (*s
 }
 
 func (r *queryResolver) ListProducts(ctx context.Context) ([]*model.Product, error) {
-	panic(fmt.Errorf("not implemented"))
+	return model.ListProducts(), nil
 }
 
 func (r *queryResolver) GetProduct(ctx context.Context, id string) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented"))
+
+	uid64, _ := strconv.ParseUint(id, 10, 32)
+	uid := uint(uid64)
+	for _, v := range r.products {
+		if v.ID == uid {
+			return v, nil
+		}
+	}
+
+	return nil, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

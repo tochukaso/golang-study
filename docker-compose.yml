@@ -26,5 +26,6 @@ services:
             - GOLANGSTUDY_DSN=gostudy:gostudy@tcp(db:3306)/gostudy?parseTime=True
         ports:
             - 8081:8081
+            - 8082:8082
         depends_on: 
             - db

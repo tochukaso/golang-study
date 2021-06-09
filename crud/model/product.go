@@ -94,6 +94,12 @@ func GetProductFromCode(code string) Product {
 	return product
 }
 
+func ListProducts() []*Product {
+	var products []*Product
+	GetDB().Find(&products)
+	return products
+}
+
 func ReadProduct(orgCode, productName string) ([]Product, int) {
 	return readProduct(db.GetDB(), orgCode, productName)
 }
