@@ -15,7 +15,7 @@ import (
 func GetDB() *gorm.DB {
 
 	logFilePath := env.GetEnv().LogFilePath
-	f, _ := os.Create(logFilePath)
+	f, _ := os.OpenFile(logFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 
 	newLogger := logger.New(
 		log.New(f, "\r\n", log.LstdFlags), // io writer
@@ -41,7 +41,7 @@ func GetDB() *gorm.DB {
 func getSQLLogLevel() logger.LogLevel {
 	sqlLogLevel := env.GetEnv().SQLLogLevel
 
-	var logLevel = logger.Silent
+	var logLevel = logger.Info
 	switch sqlLogLevel {
 	case "Silent":
 		logLevel = logger.Silent
