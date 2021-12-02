@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -20,6 +23,27 @@ import (
 )
 
 func main() {
+	url := "https://www.asoview.com/purchase/scheduled-ticket/input/?ticketTypeCode=ticket0000009288&channelCode=EwWA0nCyCe"
+
+	for i := 0; i < 1000; i++ {
+		resp, err := http.Get(url)
+		if err != nil {
+			os.Exit(2)
+		}
+		defer resp.Body.Close()
+
+		byteArray, _ := ioutil.ReadAll(resp.Body)
+		s := string(byteArray)
+		if strings.Index(s, "このページを再読み込みする") > 0 {
+			fmt.Println("ng : ", i)
+		} else {
+			fmt.Println("next", s)
+		}
+	}
+
+}
+
+func startGin() {
 	go runGraphQL()
 	setLogger()
 	engine := gin.Default()
@@ -39,7 +63,6 @@ func main() {
 
 	loadTemplates(engine)
 	engine.Run(":8081")
-
 }
 
 func runGraphQL() {
