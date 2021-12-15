@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"omori.jp/model"
+	"github.com/tochukaso/golang-study/model"
 )
 
 func UploadProduct(c *gin.Context) {

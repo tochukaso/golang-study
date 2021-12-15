@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/tochukaso/golang-study/db"
+	"github.com/tochukaso/golang-study/env"
 	"gorm.io/gorm"
-	"omori.jp/db"
-	"omori.jp/env"
 )
 
 type Product struct {
@@ -92,6 +92,12 @@ func GetProductFromCode(code string) Product {
 	var product Product
 	GetDB().Find(&product, "org_code = ?", code)
 	return product
+}
+
+func ListProducts() []*Product {
+	var products []*Product
+	GetDB().Find(&products)
+	return products
 }
 
 func ReadProduct(orgCode, productName string) ([]Product, int) {

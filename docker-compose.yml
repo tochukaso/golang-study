@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+    db:
+        image: mysql:latest
+        command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=gostudy
+            - MYSQL_USER=gostudy
+            - MYSQL_PASSWORD=gostudy
+            - "TZ=Asia/Tokyo"
+    web:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        volumes:
+            - ./crud:/crud
+        working_dir: /crud
+        command:  bash -c "go mod download && go run main.go"
+        environment:
+            - GOLANGSTUDY_PRODUCTIMAGEPATH=/crud/static/assets/product
+            - GOLANGSTUDY_LOGFILEPATH=./log/app.log
+            - GOLANGSTUDY_SQLLOGLEVEL=Info
+            - GOLANGSTUDY_COOKIESSL=false
+            - GOLANGSTUDY_BASEURL=http://localhost:8081
+            - GOLANGSTUDY_DSN=gostudy:gostudy@tcp(db:3306)/gostudy?parseTime=True
+        ports:
+            - 8081:8081
+            - 8082:8082
+        depends_on: 
+            - db

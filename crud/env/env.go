@@ -8,6 +8,7 @@ import (
 )
 
 type Env struct {
+	DSN              string
 	ProductImagePath string
 	SmtpFrom         string
 	SmtpHost         string

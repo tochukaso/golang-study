@@ -7,11 +7,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/tochukaso/golang-study/mail"
+	"github.com/tochukaso/golang-study/message"
+	"github.com/tochukaso/golang-study/model"
+	"github.com/tochukaso/golang-study/pagination"
 	"golang.org/x/crypto/bcrypt"
-	"omori.jp/mail"
-	"omori.jp/message"
-	"omori.jp/model"
-	"omori.jp/pagination"
 )
 
 func InitUser() {

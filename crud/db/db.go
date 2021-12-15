@@ -1,21 +1,21 @@
 package db
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
 
+	"github.com/tochukaso/golang-study/env"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"omori.jp/env"
 )
 
 func GetDB() *gorm.DB {
-	dsn := "gostudy:gostudy@/gostudy?parseTime=true"
 
 	logFilePath := env.GetEnv().LogFilePath
-	f, _ := os.Create(logFilePath)
+	f, _ := os.OpenFile(logFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 
 	newLogger := logger.New(
 		log.New(f, "\r\n", log.LstdFlags), // io writer
@@ -26,9 +26,14 @@ func GetDB() *gorm.DB {
 		},
 	)
 
-	db, _ := gorm.Open(mysql.Open(dsn), &gorm.Config{
+	db, err := gorm.Open(mysql.Open(env.GetEnv().DSN), &gorm.Config{
 		Logger: newLogger,
 	})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	log.SetOutput(f)
 	return db
 }
@@ -36,7 +41,7 @@ func GetDB() *gorm.DB {
 func getSQLLogLevel() logger.LogLevel {
 	sqlLogLevel := env.GetEnv().SQLLogLevel
 
-	var logLevel = logger.Silent
+	var logLevel = logger.Info
 	switch sqlLogLevel {
 	case "Silent":
 		logLevel = logger.Silent

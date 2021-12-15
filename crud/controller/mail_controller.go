@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"omori.jp/message"
-	"omori.jp/model"
+	"github.com/tochukaso/golang-study/message"
+	"github.com/tochukaso/golang-study/model"
 )
 
 func InitMailTemplate() {

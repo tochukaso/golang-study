@@ -3,7 +3,7 @@ package csv
 import (
 	"time"
 
-	"omori.jp/model"
+	"github.com/tochukaso/golang-study/model"
 )
 
 type ProductCSV struct {

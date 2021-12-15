@@ -1,21 +1,50 @@
 package main
 
 import (
+	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/tochukaso/golang-study/controller"
+	"github.com/tochukaso/golang-study/env"
+	"github.com/tochukaso/golang-study/graph"
+	"github.com/tochukaso/golang-study/graph/generated"
+	"github.com/tochukaso/golang-study/middleware"
 	csrf "github.com/utrack/gin-csrf"
-	"omori.jp/controller"
-	"omori.jp/env"
-	"omori.jp/middleware"
 )
 
 func main() {
+	url := "https://www.asoview.com/purchase/scheduled-ticket/input/?ticketTypeCode=ticket0000009288&channelCode=EwWA0nCyCe"
+
+	for i := 0; i < 1000; i++ {
+		resp, err := http.Get(url)
+		if err != nil {
+			os.Exit(2)
+		}
+		defer resp.Body.Close()
+
+		byteArray, _ := ioutil.ReadAll(resp.Body)
+		s := string(byteArray)
+		if strings.Index(s, "このページを再読み込みする") > 0 {
+			fmt.Println("ng : ", i)
+		} else {
+			fmt.Println("next", s)
+		}
+	}
+
+}
+
+func startGin() {
+	go runGraphQL()
 	setLogger()
 	engine := gin.Default()
 	setCookiePolicy(engine)
@@ -36,6 +65,19 @@ func main() {
 	engine.Run(":8081")
 }
 
+func runGraphQL() {
+	port := "8082"
+
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
+
+}
+
 func loadTemplates(engine *gin.Engine) {
 	engine.Static("/static", "static")
 }
@@ -46,6 +88,7 @@ func addControllers(engine *gin.Engine) {
 	addProductUploadController(engine)
 	addUserController(engine)
 	addMailController(engine)
+	addGraphQL(engine)
 }
 
 func addLoginController(engine *gin.Engine) {
@@ -105,6 +148,31 @@ func addMailController(engine *gin.Engine) {
 	group.GET("/detail/:code", controller.GetMailTemplate)
 
 	group.POST("/", controller.PutMailTemplate)
+}
+
+func addGraphQL(engine *gin.Engine) {
+	engine.POST("/gq/query", graphqlHandler())
+	engine.GET("/gq/", playgroundHandler())
+}
+
+// Defining the Graphql handler
+func graphqlHandler() gin.HandlerFunc {
+	// NewExecutableSchema and Config are in the generated.go file
+	// Resolver is in the resolver.go file
+	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+// Defining the Playground handler
+func playgroundHandler() gin.HandlerFunc {
+	h := playground.Handler("GraphQL", "/gq/query")
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
 }
 
 func setLogger() {
