@@ -23,24 +23,7 @@ import (
 )
 
 func main() {
-	url := "https://www.asoview.com/purchase/scheduled-ticket/input/?ticketTypeCode=ticket0000009288&channelCode=EwWA0nCyCe"
-
-	for i := 0; i < 1000; i++ {
-		resp, err := http.Get(url)
-		if err != nil {
-			os.Exit(2)
-		}
-		defer resp.Body.Close()
-
-		byteArray, _ := ioutil.ReadAll(resp.Body)
-		s := string(byteArray)
-		if strings.Index(s, "このページを再読み込みする") > 0 {
-			fmt.Println("ng : ", i)
-		} else {
-			fmt.Println("next", s)
-		}
-	}
-
+	staartGin()
 }
 
 func startGin() {
