@@ -1,13 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -23,7 +20,7 @@ import (
 )
 
 func main() {
-	staartGin()
+	startGin()
 }
 
 func startGin() {
